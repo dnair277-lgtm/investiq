@@ -10,6 +10,7 @@
 <title>InvestIQ – Teen Investment Manager</title>
 <link rel="manifest" href="manifest.json">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
@@ -867,6 +868,12 @@ const ACCTS_KEY  = 'investiq_accounts';  // list of all local accounts
 const SESS_KEY   = 'investiq_session';   // sessionStorage: current user id
 const REMEM_KEY  = 'investiq_remember';  // localStorage: remembered user id
 
+// ── SUPABASE ────────────────────────────────────────────────────────────────
+const SUPA_URL  = 'https://oponkcgmtbfdddeltfro.supabase.co';
+const SUPA_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wb25rY2dtdGJmZGRkZWx0ZnJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3NzU1MDMsImV4cCI6MjA5ODM1MTUwM30.VNK7scAb2cQMPwbwJRE10O7el-EC2iGpdCbzqtC9RQg';
+const PROXY_URL = SUPA_URL + '/functions/v1/finnhub-proxy';
+const supa = supabase.createClient(SUPA_URL, SUPA_KEY);
+
 let CURRENT_USER = null;  // { id, username, displayName }
 let UKEY = 'investiq_v3_demo'; // per-user data key; updated on login
 
@@ -909,22 +916,26 @@ async function doSignIn() {
   const username = document.getElementById('si-user').value.trim().toLowerCase();
   const password = document.getElementById('si-pass').value;
   const remember = document.getElementById('si-remember').checked;
-  const errEl = document.getElementById('signin-error');
-  errEl.style.display = 'none';
-
+  document.getElementById('signin-error').style.display = 'none';
   if (!username || !password) { showAuthErr('signin', 'Please enter username and password.'); return; }
-
   setBtnLoading('si-btn', true);
   try {
-    const hash = await sha256(password);
-    const accts = getAccounts();
-    const acct = accts.find(a => a.username === username && a.passwordHash === hash);
-    if (!acct) { showAuthErr('signin', 'Incorrect username or password.'); setBtnLoading('si-btn', false); return; }
-    startSession(acct, remember);
+    const { data, error } = await supa.auth.signInWithPassword({
+      email: username + '@investiq.internal', password
+    });
+    if (error) { showAuthErr('signin', 'Incorrect username or password.'); setBtnLoading('si-btn', false); return; }
+    const { data: profile } = await supa.from('profiles').select('*').eq('id', data.user.id).single();
+    const user = {
+      id: data.user.id,
+      username: profile?.username || username,
+      displayName: profile?.display_name || username
+    };
+    startSession(user, remember);
     enterApp();
-  } catch(e) { showAuthErr('signin', 'Sign in failed. Try again.'); }
+  } catch(e) { showAuthErr('signin', 'Connection error. Check your internet.'); }
   setBtnLoading('si-btn', false);
 }
+
 
 async function doSignUp() {
   const display  = document.getElementById('su-display').value.trim();
@@ -932,28 +943,30 @@ async function doSignUp() {
   const pass     = document.getElementById('su-pass').value;
   const pass2    = document.getElementById('su-pass2').value;
   showAuthErr('signup', null); showAuthOk('signup', null);
-
-  if (!display)               { showAuthErr('signup', 'Display name is required.'); return; }
-  if (!username)              { showAuthErr('signup', 'Username is required.'); return; }
-  if (username.length < 3)   { showAuthErr('signup', 'Username must be at least 3 characters.'); return; }
-  if (!/^[a-z0-9_]+$/.test(username)) { showAuthErr('signup', 'Username can only contain letters, numbers, and underscores.'); return; }
-  if (pass.length < 6)       { showAuthErr('signup', 'Password must be at least 6 characters.'); return; }
-  if (pass !== pass2)        { showAuthErr('signup', 'Passwords do not match.'); return; }
-
-  const accts = getAccounts();
-  if (accts.find(a => a.username === username)) { showAuthErr('signup', 'That username is taken. Try another.'); return; }
-
+  if (!display)             { showAuthErr('signup', 'Display name is required.'); return; }
+  if (!username)            { showAuthErr('signup', 'Username is required.'); return; }
+  if (username.length < 3) { showAuthErr('signup', 'Username must be at least 3 characters.'); return; }
+  if (!/^[a-z0-9_]+$/.test(username)) { showAuthErr('signup', 'Letters, numbers, underscores only.'); return; }
+  if (pass.length < 6)     { showAuthErr('signup', 'Password must be at least 6 characters.'); return; }
+  if (pass !== pass2)      { showAuthErr('signup', 'Passwords do not match.'); return; }
   setBtnLoading('su-btn', true);
   try {
-    const hash = await sha256(pass);
-    const newAcct = { id: uid(), username, displayName: display, passwordHash: hash, createdAt: today(), lbOptIn: false, lbName: display };
-    accts.push(newAcct);
-    saveAccounts(accts);
-    showAuthOk('signup', 'Account created! Signing you in…');
-    setTimeout(() => { startSession(newAcct, false); enterApp(); }, 800);
-  } catch(e) { showAuthErr('signup', 'Could not create account. Try again.'); }
+    const { data, error } = await supa.auth.signUp({
+      email: username + '@investiq.internal',
+      password: pass,
+      options: { data: { username, display_name: display } }
+    });
+    if (error) {
+      const msg = error.message.includes('already registered') ? 'That username is already taken.' : error.message;
+      showAuthErr('signup', msg); setBtnLoading('su-btn', false); return;
+    }
+    await supa.from('profiles').insert({ id: data.user.id, username, display_name: display, lb_name: display, lb_opt_in: true });
+    showAuthOk('signup', 'Account created! Signing you in...');
+    setTimeout(() => { startSession({ id: data.user.id, username, displayName: display }, false); enterApp(); }, 600);
+  } catch(e) { showAuthErr('signup', 'Connection error. Check your internet.'); }
   setBtnLoading('su-btn', false);
 }
+
 
 function demoMode() {
   const demo = { id: 'demo', username: 'demo', displayName: 'Demo User' };
@@ -961,9 +974,10 @@ function demoMode() {
   enterApp();
 }
 
-function doLogout() {
+async function doLogout() {
   if (!confirm('Sign out?')) return;
   D = blank();
+  if (CURRENT_USER && CURRENT_USER.id !== 'demo') await supa.auth.signOut();
   clearSession();
   showAuthScreen();
 }
@@ -1028,27 +1042,27 @@ function setBtnLoading(id, loading) {
 
 // ── Account settings helpers ─────────────────────────────────────────────────
 async function changePassword() {
-  const cur  = document.getElementById('acc-cur-pass').value;
-  const np   = document.getElementById('acc-new-pass').value;
-  const np2  = document.getElementById('acc-new-pass2').value;
-  const errEl= document.getElementById('acc-pass-err');
+  const cur   = document.getElementById('acc-cur-pass').value;
+  const np    = document.getElementById('acc-new-pass').value;
+  const np2   = document.getElementById('acc-new-pass2').value;
+  const errEl = document.getElementById('acc-pass-err');
   errEl.style.display='none';
   if (!cur||!np||!np2) { errEl.textContent='All fields required.'; errEl.style.display='block'; return; }
   if (np.length<6)     { errEl.textContent='New password must be at least 6 characters.'; errEl.style.display='block'; return; }
   if (np!==np2)        { errEl.textContent='New passwords do not match.'; errEl.style.display='block'; return; }
   if (CURRENT_USER.id==='demo') { errEl.textContent='Cannot change password in demo mode.'; errEl.style.display='block'; return; }
-  const curHash = await sha256(cur);
-  const accts = getAccounts();
-  const acct = accts.find(a=>a.id===CURRENT_USER.id);
-  if (!acct||acct.passwordHash!==curHash) { errEl.textContent='Current password is incorrect.'; errEl.style.display='block'; return; }
-  acct.passwordHash = await sha256(np);
-  saveAccounts(accts);
+  const { error: reErr } = await supa.auth.signInWithPassword({
+    email: CURRENT_USER.username + '@investiq.internal', password: cur
+  });
+  if (reErr) { errEl.textContent='Current password is incorrect.'; errEl.style.display='block'; return; }
+  const { error } = await supa.auth.updateUser({ password: np });
+  if (error) { errEl.textContent='Update failed: ' + error.message; errEl.style.display='block'; return; }
   document.getElementById('acc-cur-pass').value='';
   document.getElementById('acc-new-pass').value='';
   document.getElementById('acc-new-pass2').value='';
-  errEl.style.display='none';
   alert('Password changed successfully!');
 }
+
 
 function saveDisplayName() {
   const name = document.getElementById('acc-display').value.trim();
@@ -1065,15 +1079,13 @@ function saveDisplayName() {
   alert('Display name updated!');
 }
 
-function deleteAccount() {
+async function deleteAccount() {
   if (CURRENT_USER.id==='demo') { alert('No account to delete in demo mode.'); return; }
   if (!confirm('Delete your account and ALL your investment data? This cannot be undone.')) return;
-  if (!confirm('Final confirmation: permanently delete account "'+CURRENT_USER.username+'"?')) return;
-  // Remove account
-  const accts=getAccounts().filter(a=>a.id!==CURRENT_USER.id);
-  saveAccounts(accts);
-  // Remove data
+  if (!confirm('Final confirmation: permanently delete "'+CURRENT_USER.username+'"?')) return;
   localStorage.removeItem(UKEY);
+  try { await supa.rpc('delete_own_account'); } catch(e) { console.warn('RPC delete failed', e); }
+  await supa.auth.signOut();
   clearSession();
   showAuthScreen();
 }
@@ -1814,7 +1826,6 @@ function watchToBuy(id){
 //  NEWS  (Finnhub live headlines)
 // ════════════════════════════════════════════
 async function renderNews(){
-  const key=D.settings.apiKey;
   const allTickers=[...new Set([...D.stocks.map(s=>s.ticker),...D.watchlist.map(w=>w.ticker)].filter(Boolean))].slice(0,10);
   const box=document.getElementById('news-box');
 
@@ -1823,8 +1834,7 @@ async function renderNews(){
     return;
   }
 
-  if(!key){
-    // Fallback: link cards (original behaviour)
+  if(false){ // link-fallback disabled — proxy handles it    // Fallback: link cards (original behaviour)
     box.innerHTML=allTickers.map(t=>`
       <div class="nitem">
         <div class="nmeta">\u{1F4CA} ${t}</div>
@@ -1856,8 +1866,7 @@ async function renderNews(){
   for(const ticker of allTickers){
     const el=document.getElementById('ni-'+ticker);
     try{
-      const res=await fetch('https://finnhub.io/api/v1/company-news?symbol='+encodeURIComponent(ticker)+'&from='+from+'&to='+to+'&token='+key);
-      const arts=await res.json();
+      const arts=await callFinnhub('news',{symbol:ticker,from,to});
       if(!el) continue;
       const valid=Array.isArray(arts)?arts.filter(a=>a.headline&&a.url).slice(0,4):[];
       el.innerHTML=`<div class="nmeta">\u{1F4CA} ${ticker}</div>`+(valid.length
@@ -2002,19 +2011,33 @@ function delGrowth(id){if(!confirm('Delete this entry?'))return;D.growth=D.growt
 // ════════════════════════════════════════════
 //  LIVE PRICE REFRESH (Alpha Vantage)
 // ════════════════════════════════════════════
+// ── FINNHUB HELPER: proxy first, direct key fallback ─────────────────────────
+async function callFinnhub(type, params) {
+  try {
+    const qs = new URLSearchParams({ type, ...params });
+    const res = await fetch(PROXY_URL + '?' + qs, {
+      headers: { 'Authorization': 'Bearer ' + SUPA_KEY },
+      signal: AbortSignal.timeout(8000)
+    });
+    if (res.ok) return await res.json();
+  } catch(e) { /* proxy not ready, try direct */ }
+  const key = D.settings.apiKey;
+  if (!key) return null;
+  const base = type === 'quote'
+    ? 'https://finnhub.io/api/v1/quote'
+    : 'https://finnhub.io/api/v1/company-news';
+  const qs2 = new URLSearchParams({ ...params, token: key });
+  const res2 = await fetch(base + '?' + qs2);
+  return await res2.json();
+}
+
 async function refreshPrices(silent=false){
-  const key=D.settings.apiKey;
-  if(!key){
-    if(!silent) alert('Add a free Finnhub API key in ⚙️ Settings to enable live prices and news.\n\nGet yours free (1 min) at:\nfinnhub.io/register');
-    return;
-  }
   const tickers=[...new Set(D.stocks.map(s=>s.ticker).filter(Boolean))];
   if(!tickers.length){if(!silent)alert('No open positions to update.');return;}
   let updated=0;
   for(const t of tickers){
     try{
-      const res=await fetch('https://finnhub.io/api/v1/quote?symbol='+encodeURIComponent(t)+'&token='+key);
-      const q=await res.json();
+      const q=await callFinnhub('quote',{symbol:t});
       if(q&&q.c&&q.c>0){
         D.stocks.filter(s=>s.ticker===t).forEach(s=>{
           s.curPrice=q.c;
@@ -2106,20 +2129,29 @@ document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{
 // ════════════════════════════════════════════
 //  BOOT
 // ════════════════════════════════════════════
-window.addEventListener('DOMContentLoaded',()=>{
-  // Check for existing session (tab reload or "keep me signed in")
-  const savedId = getRestoredUserId();
-  if (savedId) {
-    const accts = getAccounts();
-    const acct  = savedId==='demo'
-      ? { id:'demo', username:'demo', displayName:'Demo User' }
-      : accts.find(a=>a.id===savedId);
-    if (acct) {
-      startSession(acct, !!localStorage.getItem(REMEM_KEY));
+window.addEventListener('DOMContentLoaded', async () => {
+  // Check Supabase session first (handles tab reload + persistent login)
+  try {
+    const { data: { session } } = await supa.auth.getSession();
+    if (session) {
+      const { data: profile } = await supa.from('profiles').select('*').eq('id', session.user.id).single();
+      const user = {
+        id: session.user.id,
+        username: profile?.username || session.user.email?.replace('@investiq.internal','') || 'user',
+        displayName: profile?.display_name || 'User'
+      };
+      startSession(user, true);
       enterApp();
-    } else {
-      showAuthScreen();
+      if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+      toggleAutoRefresh();
+      return;
     }
+  } catch(e) { console.warn('Supabase session check failed', e); }
+  // Fallback: demo mode only
+  const savedId = getRestoredUserId();
+  if (savedId === 'demo') {
+    startSession({ id:'demo', username:'demo', displayName:'Demo User' }, false);
+    enterApp();
   } else {
     showAuthScreen();
   }
@@ -2131,31 +2163,42 @@ window.addEventListener('DOMContentLoaded',()=>{
 //  LEADERBOARD
 // ════════════════════════════════════════════
 
-// ── BACKEND STUB ──────────────────────────────────────────────────────────────
-// When your backend is ready, replace these two functions:
-//
-// async function lbFetchScores() {
-//   const res = await fetch('https://YOUR_API_URL/leaderboard');
-//   return await res.json(); // expects array of { name, returnPct, totalPL, winRate, portVal, updatedAt }
-// }
-//
-// async function lbPostScore(payload) {
-//   await fetch('https://YOUR_API_URL/leaderboard', {
-//     method: 'POST',
-//     headers: { 'Content-Type': 'application/json' },
-//     body: JSON.stringify(payload)
-//   });
-// }
-//
-// Firebase Firestore alternative (recommended — free, no server needed):
-//   npm: firebase  |  import { getFirestore, collection, addDoc, getDocs } from 'firebase/firestore'
-//   Docs: firebase.google.com/docs/firestore
-// ─────────────────────────────────────────────────────────────────────────────
+// ── SUPABASE LEADERBOARD ─────────────────────────────────────────────────────
+const LB_CONNECTED = true;
 
-const LB_CONNECTED = false; // flip to true once backend is wired
+async function lbFetchScores() {
+  const { data, error } = await supa
+    .from('leaderboard_scores')
+    .select('*')
+    .order('return_pct', { ascending: false })
+    .limit(50);
+  if (error) throw error;
+  return (data || []).map(r => ({
+    name: r.lb_name,
+    returnPct: r.return_pct,
+    totalPL: r.total_pl,
+    portVal: r.port_val,
+    winRate: r.win_rate,
+    updatedAt: r.updated_at ? r.updated_at.substr(0,10) : today()
+  }));
+}
 
-// Mock data — realistic demo entries so the UI looks live
+async function lbPostScore(payload) {
+  if (!CURRENT_USER || CURRENT_USER.id === 'demo') return;
+  await supa.from('leaderboard_scores').upsert({
+    user_id: CURRENT_USER.id,
+    lb_name: payload.name,
+    return_pct: payload.returnPct,
+    total_pl: payload.totalPL,
+    port_val: payload.portVal,
+    win_rate: payload.winRate,
+    updated_at: new Date().toISOString()
+  }, { onConflict: 'user_id' });
+}
+
+// Fallback mock data shown if leaderboard is empty or fetch fails
 const LB_MOCK = [
+
   { name:'MarketMaven',   returnPct:42.7, totalPL:42700,  winRate:78, portVal:142700, updatedAt:'2026-06-27' },
   { name:'BullRider99',   returnPct:31.2, totalPL:31200,  winRate:71, portVal:131200, updatedAt:'2026-06-26' },
   { name:'DividendKing',  returnPct:28.9, totalPL:28900,  winRate:80, portVal:128900, updatedAt:'2026-06-27' },
@@ -2281,21 +2324,17 @@ async function lbFetchScoresSafe() {
   try { return await lbFetchScores(); } catch(e) { console.warn('Leaderboard fetch failed', e); return [...LB_MOCK]; }
 }
 
-// Stub — replace with real API call when backend is ready
-async function lbFetchScores() {
-  throw new Error('Backend not connected');
+async function lbSubmit() {
+  if (CURRENT_USER?.id === 'demo') { alert('Sign in to a real account to post to the leaderboard.'); return; }
+  const lbName = D.settings.lbName || D.settings.name || CURRENT_USER?.displayName || '';
+  if (!lbName) { alert('Set a leaderboard name in Settings -> Leaderboard first.'); return; }
+  const m = metrics();
+  try {
+    await lbPostScore({ name: lbName, returnPct: m.totalPLpct, totalPL: m.totalPL, portVal: m.portVal, winRate: m.winRate });
+    alert('Score submitted! Refreshing leaderboard...');
+    renderLeaderboard();
+  } catch(e) { alert('Failed to submit. Check your connection.'); console.error(e); }
 }
-
-function lbSubmit() {
-  if (!LB_CONNECTED) {
-    alert('The leaderboard backend is not connected yet.\n\nOnce a backend is set up, this button will submit your current P&L score to the live leaderboard.\n\nTo prepare: set your display name in ⚙️ Settings → Leaderboard.');
-    return;
-  }
-  // Real submit when backend is ready:
-  // const m = metrics();
-  // lbPostScore({ name: D.settings.lbName, returnPct: m.totalPLpct, totalPL: m.totalPL, winRate: m.winRate, portVal: m.portVal });
-}
-
 function lbRefresh() { renderLeaderboard(); }
 
 </script>
