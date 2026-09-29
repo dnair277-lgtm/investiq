@@ -231,6 +231,35 @@ select option{background:var(--card);}
 .pending-section table th,.pending-section table td{font-size:12px;padding:5px 8px;}
 .order-info-box{font-size:12px;color:var(--t3);padding:8px 10px;background:var(--bg);border-radius:6px;border-left:3px solid var(--blue);margin-top:4px;}
 
+/* ── EDUCATION / AI ANALYSIS ── */
+.edu-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;position:relative;overflow:hidden;transition:box-shadow .2s;}
+.edu-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.3);}
+.edu-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0;}
+.edu-card.sig-sb::before{background:linear-gradient(90deg,var(--green),#5af5b0);}
+.edu-card.sig-b::before{background:rgba(0,229,160,.5);}
+.edu-card.sig-h::before{background:var(--blue);}
+.edu-card.sig-s::before{background:rgba(248,81,73,.5);}
+.edu-card.sig-ss::before{background:linear-gradient(90deg,var(--red),#f87069);}
+.edu-signal{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.04em;}
+.edu-signal.sb{background:rgba(0,229,160,.15);color:var(--green);}
+.edu-signal.b{background:rgba(0,229,160,.08);color:#5af5b0;}
+.edu-signal.h{background:rgba(88,166,255,.12);color:var(--blue);}
+.edu-signal.s{background:rgba(248,81,73,.08);color:#f87069;}
+.edu-signal.ss{background:rgba(248,81,73,.18);color:var(--red);}
+.edu-metric{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.edu-metric:last-child{border-bottom:none;}
+.edu-metric-label{color:var(--t3);}
+.edu-ai-box{background:rgba(88,166,255,.05);border:1px solid rgba(88,166,255,.15);border-radius:8px;padding:12px;margin-top:12px;font-size:12px;line-height:1.65;color:var(--t1);}
+.edu-action-box{padding:10px 12px;border-radius:8px;margin-top:10px;font-size:12px;font-weight:500;line-height:1.5;}
+.edu-action-buy{background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.2);color:var(--green);}
+.edu-action-hold{background:rgba(88,166,255,.08);border:1px solid rgba(88,166,255,.2);color:var(--blue);}
+.edu-action-sell{background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.2);color:var(--red);}
+.edu-filter.on{background:var(--green)!important;color:#0d1117!important;border-color:var(--green)!important;}
+.edu-score-bar{height:6px;border-radius:3px;background:var(--bg);margin-top:10px;overflow:hidden;}
+.edu-score-fill{height:100%;border-radius:3px;transition:width .4s;}
+.pup{color:var(--green);}
+.pdn{color:var(--red);}
+
 </style>
 </head>
 <body>
@@ -291,6 +320,7 @@ select option{background:var(--card);}
     <button class="ntab" onclick="go('sp500')">🎯 S&P 500</button>
     <button class="ntab" onclick="go('growth')">📅 Growth</button>
     <button class="ntab" onclick="go('leaderboard')">🏆 Leaderboard</button>
+    <button class="ntab" onclick="go('edu')">🎓 Education</button>
     <button class="ntab" onclick="go('settings')">⚙️ Settings</button>
   </div>
   <div class="nav-r" style="display:flex;align-items:center;gap:6px;">
@@ -312,6 +342,7 @@ select option{background:var(--card);}
   <button class="mbtn" onclick="go('sp500')"><span class="ic">🎯</span>S&P500</button>
   <button class="mbtn" onclick="go('growth')"><span class="ic">📅</span>Growth</button>
   <button class="mbtn" onclick="go('leaderboard')"><span class="ic">🏆</span>Board</button>
+  <button class="mbtn" onclick="go('edu')"><span class="ic">🎓</span>Edu</button>
   <button class="mbtn" onclick="go('settings')"><span class="ic">⚙️</span>Settings</button>
 </div></div>
 
@@ -348,7 +379,7 @@ select option{background:var(--card);}
     <table>
       <thead><tr>
         <th>Date</th><th>Ticker</th><th>Company</th><th>Type</th>
-        <th>Buy $</th><th>Shares</th><th>Invested</th>
+        <th>Entry $</th><th>Shares</th><th>Cost Basis</th>
         <th>Current $</th><th>Value</th><th>P&L $</th><th>P&L %</th>
         <th>Inv. Type</th><th>Duration</th><th>Target $</th><th>Status</th><th>Actions</th>
       </tr></thead>
@@ -367,8 +398,8 @@ select option{background:var(--card);}
     <table>
       <thead><tr>
         <th>Open</th><th>Closed</th><th>Ticker</th><th>Company</th><th>Type</th>
-        <th>Buy $</th><th>Close $</th><th>Shares</th>
-        <th>Invested</th><th>Close Val.</th><th>Realized P&L</th><th>P&L %</th>
+        <th>Entry $</th><th>Exit $</th><th>Shares</th>
+        <th>Cost Basis</th><th>Close Val.</th><th>Realized P&L</th><th>P&L %</th>
         <th>Inv. Type</th><th>Duration</th><th>Status</th>
       </tr></thead>
       <tbody id="h-body"></tbody>
@@ -551,6 +582,36 @@ select option{background:var(--card);}
       <div><strong style="color:var(--t1);">⚡ Coming Soon</strong><br>Weekly/monthly leaderboards, sector-specific rankings, and a "Beat the Market" challenge. Backend connection required — check Settings for status.</div>
     </div>
   </div>
+</div>
+
+<!-- ══ EDUCATION / AI ANALYSIS ══ -->
+<div id="p-edu" class="page">
+  <div class="ph">
+    <div class="phtitle">🎓 Education &amp; AI Analysis</div>
+    <div class="phact">
+      <span id="edu-ts" style="font-size:11px;color:var(--t3);margin-right:8px;"></span>
+      <button class="btn bs sm" onclick="renderEdu(true)">🔄 Refresh Analysis</button>
+    </div>
+  </div>
+  <div class="alert a-info" style="margin-bottom:16px;">
+    <strong>🤖 AI Market Intelligence</strong> — Real-time technical analysis for every stock you're watching or holding. The AI monitors price action, RSI, moving averages, and your position performance to surface personalized insights. <em>For educational purposes only — not financial advice.</em>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+    <button class="btn bs sm edu-filter on" onclick="setEduFilter('all')">All Stocks</button>
+    <button class="btn bs sm edu-filter" onclick="setEduFilter('positions')">Open Positions</button>
+    <button class="btn bs sm edu-filter" onclick="setEduFilter('watchlist')">Watchlist</button>
+    <button class="btn bs sm edu-filter" onclick="setEduFilter('history')">Historical</button>
+  </div>
+  <div id="edu-loading" style="display:none;text-align:center;padding:60px 20px;">
+    <div style="font-size:40px;margin-bottom:16px;">🤖</div>
+    <div style="font-size:15px;font-weight:600;color:var(--t1);">AI is analyzing the market…</div>
+    <div style="font-size:12px;color:var(--t3);margin-top:6px;" id="edu-progress">Fetching live data</div>
+    <div style="margin:20px auto;width:200px;height:4px;background:var(--bg);border-radius:2px;overflow:hidden;">
+      <div id="edu-pbar" style="height:100%;background:var(--green);border-radius:2px;width:0%;transition:width .3s;"></div>
+    </div>
+  </div>
+  <div id="edu-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;"></div>
+  <div id="edu-empty" style="display:none;"></div>
 </div>
 
 <!-- ══ SETTINGS ══ -->
@@ -1197,6 +1258,7 @@ function render(name) {
     case 'sp500':     renderSP(); break;
     case 'growth':    renderGrowth(); break;
     case 'leaderboard': renderLeaderboard(); break;
+    case 'edu':         renderEdu(); break;
   }
 }
 
@@ -1237,22 +1299,36 @@ function calcBond(b) {
 
 function metrics() {
   const cap = D.settings.capital||100000;
-  let sv=0, si=0, openPL=0;
-  D.stocks.forEach(s => { const c=calcStock(s); sv+=c.valueNow; si+=c.invested; openPL+=c.pl; });
+  // Separate Long and Short — they contribute to portfolio value differently:
+  // Long: you spent cash and now hold stock worth curPrice × shares
+  // Short: you received cash when you sold borrowed stock; your net P&L = (entryPrice - curPrice) × shares
+  //        Opening a short does NOT reduce cash (it receives proceeds); only P&L affects portfolio.
+  let svLong=0, siLong=0, shortPL=0, openPL=0;
+  D.stocks.forEach(s => {
+    const c=calcStock(s);
+    openPL+=c.pl;
+    if(s.posType==='Short') {
+      shortPL+=c.pl; // shorts contribute only their unrealized P&L (positive = winning short)
+    } else {
+      svLong+=c.valueNow; // longs contribute current market value
+      siLong+=c.invested;  // longs reduce available cash
+    }
+  });
   let closedPL=0;
   D.stockHist.forEach(s => { closedPL+=(s.realPL||0); });
   let bv=0, bi=0;
   D.bonds.forEach(b => { const c=calcBond(b); bv+=c.totalFace; bi+=c.totalInv; });
   let bhInt=0;
   D.bondHist.forEach(b => { bhInt+=(b.realizedVal||0); });
-  const invested = si+bi;
+  const invested = siLong+bi; // only Long stocks + bonds tie up cash
   const cash = cap - invested + closedPL + bhInt;
+  const sv = svLong + shortPL; // "stock value" = Long market value + net Short P&L
   const portVal = sv+bv+Math.max(0,cash);
   const totalPL = portVal-cap;
   const totalPLpct = (totalPL/cap)*100;
   const wins = D.stockHist.filter(s=>(s.realPL||0)>0).length;
   const winRate = D.stockHist.length>0 ? (wins/D.stockHist.length)*100 : 0;
-  return { cap, sv, si, bv, bi, cash:Math.max(0,cash), portVal, totalPL, totalPLpct, openPL, closedPL, wins, winRate };
+  return { cap, sv, si:siLong, bv, bi, cash:Math.max(0,cash), portVal, totalPL, totalPLpct, openPL, closedPL, wins, winRate };
 }
 
 // ════════════════════════════════════════════
@@ -1293,7 +1369,9 @@ function renderDash() {
   D.stocks.forEach(s => {
     const c=calcStock(s), t=s.invType||'Stock';
     const k = t.includes('Mutual')?'Mutual Fund': t.includes('ETF')?t : 'Stock';
-    types[k]=(types[k]||0)+c.valueNow;
+    // Short positions: only add positive P&L to allocation (they don't represent held assets)
+    if(s.posType==='Short') { if(c.pl>0) types[k]=(types[k]||0)+c.pl; }
+    else types[k]=(types[k]||0)+c.valueNow;
   });
   D.bonds.forEach(b => { const c=calcBond(b); types.Bond=(types.Bond||0)+c.totalFace; });
   const tColors={'Stock':'#00e5a0','ETF':'#58a6ff','Bond ETF':'#f0883e','Mutual Fund':'#bc8cff','Bond':'#e3b341','Cash':'#8b949e'};
@@ -1357,12 +1435,20 @@ function renderDonut(id, existing, labels, data, colors, cb) {
 //  STOCKS
 // ════════════════════════════════════════════
 function renderStocks() {
-  let ti=0, tv=0, tpl=0;
-  D.stocks.forEach(s => { const c=calcStock(s); ti+=c.invested; tv+=c.valueNow; tpl+=c.pl; });
+  let tiLong=0, tvLong=0, tpl=0, shortPL=0, nShorts=0;
+  D.stocks.forEach(s => {
+    const c=calcStock(s);
+    tpl+=c.pl;
+    if(s.posType==='Short') { shortPL+=c.pl; nShorts++; }
+    else { tiLong+=c.invested; tvLong+=c.valueNow; }
+  });
+  const nLong=D.stocks.length-nShorts;
+  const costBasis=tiLong; // only Long positions actually cost you cash
+  const returnPct=costBasis>0?(tvLong-costBasis)/costBasis*100:0;
   document.getElementById('s-stats').innerHTML = `
-    <div class="card"><div class="clabel">Total Invested</div><div class="cval">${f$(ti)}</div></div>
-    <div class="card"><div class="clabel">Current Value</div><div class="cval">${f$(tv)}</div></div>
-    <div class="card"><div class="clabel">Unrealized P&L</div><div class="cval ${pc(tpl)}">${f$f(tpl)}</div><div class="csub">${fpct(ti>0?(tpl/ti)*100:0)}</div></div>`;
+    <div class="card"><div class="clabel">Long Cost Basis</div><div class="cval">${f$(tiLong)}</div><div class="csub">${nLong} long position${nLong!==1?'s':''}</div></div>
+    <div class="card"><div class="clabel">Long Market Value</div><div class="cval">${f$(tvLong)}</div><div class="csub">${nShorts>0?nShorts+' short position'+(nShorts!==1?'s':'')+' · P&amp;L: '+f$f(shortPL):fpct(returnPct)+' return'}</div></div>
+    <div class="card"><div class="clabel">Unrealized P&L (All)</div><div class="cval ${pc(tpl)}">${f$f(tpl)}</div><div class="csub">${fpct(tiLong>0?(tpl/tiLong)*100:0)}</div></div>`;
 
   if(D.stocks.length===0) {
     document.getElementById('s-body').innerHTML='<tr><td colspan="16"><div class="empty"><div class="ei">📈</div><p>No open positions. Click "+ Add Position" to begin tracking!</p></div></td></tr>';
@@ -1473,6 +1559,32 @@ function stockPreview() {
   const sh=parseFloat(document.getElementById('ms-shares').value)||0;
   const cur=parseFloat(document.getElementById('ms-cur').value)||buy;
   const action=document.getElementById('ms-action').value;
+
+  // For Sell / Short Cover — P&L must be computed relative to the ORIGINAL position's buy price
+  if(action==='Sell'||action==='Short Cover') {
+    const closePosId=document.getElementById('ms-close-pos')?.value;
+    const orig=closePosId?D.stocks.find(x=>x.id===closePosId):null;
+    if(orig&&buy>0&&sh>0) {
+      const closeShares=Math.min(sh,orig.shares);
+      const origInv=orig.buyPrice*closeShares;        // what it cost to open
+      const closeVal=buy*closeShares;                  // what you receive/pay to close
+      const pl=action==='Short Cover'?origInv-closeVal:closeVal-origInv;
+      const pct=origInv>0?(pl/origInv)*100:0;
+      document.getElementById('ms-inv-amt').value='$'+closeVal.toFixed(2);
+      document.getElementById('ms-pval').textContent=f$f(closeVal);
+      document.getElementById('ms-ppl').textContent=(pl>=0?'+':'')+f$f(pl);
+      document.getElementById('ms-ppl').style.color=pl>=0?'var(--green)':'var(--red)';
+      document.getElementById('ms-ppct').textContent=fpct(pct);
+      document.getElementById('ms-ppct').style.color=pct>=0?'var(--green)':'var(--red)';
+      document.getElementById('ms-preview').style.display='block';
+    } else {
+      document.getElementById('ms-inv-amt').value='';
+      document.getElementById('ms-preview').style.display='none';
+    }
+    return;
+  }
+
+  // Buy or Short — P&L vs current market price
   const isShort=(action==='Short');
   const inv=buy*sh;
   document.getElementById('ms-inv-amt').value = inv>0?'$'+inv.toFixed(2):'';
@@ -1630,8 +1742,9 @@ function startCloseStock(id) {
   document.getElementById('cst-id').value=id;
   document.getElementById('cst-date').value=today();
   document.getElementById('cst-price').value=s.curPrice||'';
-  document.getElementById('cst-info').innerHTML=`<strong>${s.ticker}</strong> — ${s.company||''}<br>
-    Bought ${s.shares} shares @ ${f$f(s.buyPrice)} = <strong>${f$(c.invested)}</strong><br>
+  const verb=s.posType==='Short'?'Shorted':'Bought';
+  document.getElementById('cst-info').innerHTML=`<strong>${s.ticker}</strong> — ${s.company||''} <span class="badge ${s.posType==='Short'?'bg-r':'bg-b'}">${s.posType}</span><br>
+    ${verb} ${s.shares} shares @ ${f$f(s.buyPrice)} = <strong>${f$(c.invested)}</strong><br>
     Current P&L: <span class="${pc(c.pl)}">${f$f(c.pl)} (${fpct(c.plPct)})</span>`;
   document.getElementById('cst-preview').style.display='none';
   om('m-close-stock'); setTimeout(closeStockPreview,50);
@@ -2223,7 +2336,9 @@ function delGrowth(id){if(!confirm('Delete this entry?'))return;D.growth=D.growt
 const FINNHUB_ENDPOINTS = {
   quote:   'https://finnhub.io/api/v1/quote',
   news:    'https://finnhub.io/api/v1/company-news',
-  profile: 'https://finnhub.io/api/v1/stock/profile2'
+  profile: 'https://finnhub.io/api/v1/stock/profile2',
+  candle:  'https://finnhub.io/api/v1/stock/candle',
+  metric:  'https://finnhub.io/api/v1/stock/metric'
 };
 async function callFinnhub(type, params) {
   // Try Supabase Edge Function proxy first (hides Finnhub key from users)
@@ -2342,13 +2457,25 @@ function checkPendingOrders(priceMap) {
     const ot=order.orderType, ac=order.action;
 
     if(ot==='Limit') {
-      if(ac==='Buy'||ac==='Short Cover') { if(price<=order.limitPrice){shouldFill=true;fillPrice=order.limitPrice;} }
-      else { if(price>=order.limitPrice){shouldFill=true;fillPrice=order.limitPrice;} }
+      // Fill at the live market price (always equal-or-better than the limit the user set)
+      if(ac==='Buy'||ac==='Short Cover') { if(price<=order.limitPrice){shouldFill=true;fillPrice=price;} }
+      else { if(price>=order.limitPrice){shouldFill=true;fillPrice=price;} }
     } else if(ot==='Stop Limit') {
-      if(ac==='Buy') { if(price>=order.stopPrice){shouldFill=true;fillPrice=Math.min(price,order.limitPrice*(1+0.005));} }
-      else if(ac==='Sell') { if(price<=order.stopPrice){shouldFill=true;fillPrice=Math.max(price,order.limitPrice*(1-0.005));} }
-      else if(ac==='Short') { if(price<=order.stopPrice){shouldFill=true;fillPrice=Math.max(price,order.limitPrice*(1-0.005));} }
-      else if(ac==='Short Cover') { if(price>=order.stopPrice){shouldFill=true;fillPrice=Math.min(price,order.limitPrice*(1+0.005));} }
+      // Stop Limit: the stop triggers the order; the limit is the worst acceptable fill price.
+      // If the market blows past the limit (no fill possible), order stays pending — real market behavior.
+      if(ac==='Buy') {
+        // Stop=$155 Limit=$157: trigger when ≥155, fill only while price is still ≤157
+        if(price>=order.stopPrice && price<=order.limitPrice){shouldFill=true;fillPrice=price;}
+      } else if(ac==='Sell') {
+        // Stop=$145 Limit=$143: trigger when ≤145, fill only while price is still ≥143
+        if(price<=order.stopPrice && price>=order.limitPrice){shouldFill=true;fillPrice=price;}
+      } else if(ac==='Short') {
+        // Short Stop Limit: short when price falls to stop, only if still ≥ limit
+        if(price<=order.stopPrice && price>=order.limitPrice){shouldFill=true;fillPrice=price;}
+      } else if(ac==='Short Cover') {
+        // Cover Stop Limit: cover when price rises to stop, only if still ≤ limit
+        if(price>=order.stopPrice && price<=order.limitPrice){shouldFill=true;fillPrice=price;}
+      }
     } else if(ot==='Trailing Stop') {
       const updated={...order};
       if(ac==='Sell'||ac==='Short') {
@@ -2680,6 +2807,403 @@ async function lbSubmit() {
   } catch(e) { alert('Failed to submit. Check your connection.'); console.error(e); }
 }
 function lbRefresh() { renderLeaderboard(); }
+
+// ════════════════════════════════════════════
+//  EDUCATION / AI MARKET INTELLIGENCE
+// ════════════════════════════════════════════
+let _eduFilter = 'all';
+let _eduCache  = {}; // { ticker: { quote, candles, lastFetch } }
+let _eduRunning = false;
+
+function setEduFilter(f) {
+  _eduFilter = f;
+  document.querySelectorAll('.edu-filter').forEach(b => {
+    const fn = b.getAttribute('onclick') || '';
+    b.classList.toggle('on', fn.includes("'"+f+"'"));
+  });
+  renderEduGrid();
+}
+
+// Collect all unique tickers across positions, watchlist, history
+function getEduItems() {
+  const positions = D.stocks.map(s => ({
+    ticker: s.ticker, company: s.company||s.ticker, source: 'position', pos: s, wItem: null, hist: null
+  }));
+  const watchlist = D.watchlist.map(w => ({
+    ticker: w.ticker, company: w.name||w.ticker, source: 'watch', pos: null, wItem: w, hist: null
+  }));
+  // Most recent trade per historical ticker (excluding tickers already in open positions)
+  const openTicks = new Set(D.stocks.map(s => s.ticker));
+  const histMap = {};
+  D.stockHist.forEach(s => { if(!openTicks.has(s.ticker)) histMap[s.ticker] = s; });
+  const history = Object.values(histMap).map(s => ({
+    ticker: s.ticker, company: s.company||s.ticker, source: 'history', pos: null, wItem: null, hist: s
+  }));
+
+  const seen = new Set();
+  const all = [];
+  for(const item of [...positions, ...watchlist, ...history]) {
+    if(item.ticker && !seen.has(item.ticker)) { seen.add(item.ticker); all.push(item); }
+  }
+  return all;
+}
+
+async function renderEdu(force=false) {
+  if(_eduRunning && !force) return;
+  _eduRunning = true;
+
+  const grid = document.getElementById('edu-grid');
+  const loading = document.getElementById('edu-loading');
+  const emptyEl = document.getElementById('edu-empty');
+  const ts = document.getElementById('edu-ts');
+  const pbar = document.getElementById('edu-pbar');
+
+  const items = getEduItems();
+
+  if(!items.length) {
+    loading.style.display = 'none';
+    grid.style.display = 'none';
+    emptyEl.style.display = 'block';
+    emptyEl.innerHTML = '<div class="empty"><div class="ei">🎓</div><p>No stocks to analyze yet.</p><p style="font-size:12px;">Add stocks to your portfolio or watchlist and the AI will start monitoring them here.</p></div>';
+    _eduRunning = false;
+    return;
+  }
+
+  loading.style.display = 'block';
+  grid.style.display = 'none';
+  emptyEl.style.display = 'none';
+  if(pbar) pbar.style.width = '0%';
+
+  const now = Date.now();
+  const CACHE_TTL = 4 * 60 * 1000; // 4-min cache
+
+  const toTs  = Math.floor(now / 1000);
+  const fromTs = toTs - (90 * 24 * 3600); // 90 days of candles
+
+  for(let i = 0; i < items.length; i++) {
+    const { ticker } = items[i];
+    const prog = document.getElementById('edu-progress');
+    if(prog) prog.textContent = `Analyzing ${ticker}… (${i+1} of ${items.length})`;
+    if(pbar) pbar.style.width = ((i+1)/items.length*100) + '%';
+
+    if(!force && _eduCache[ticker] && (now - _eduCache[ticker].lastFetch) < CACHE_TTL) continue;
+
+    try {
+      const [quote, candles] = await Promise.all([
+        callFinnhub('quote', { symbol: ticker }),
+        callFinnhub('candle', { symbol: ticker, resolution: 'D', from: fromTs, to: toTs }).catch(() => null)
+      ]);
+      _eduCache[ticker] = { quote, candles, lastFetch: now };
+    } catch(e) {
+      _eduCache[ticker] = { quote: null, candles: null, lastFetch: now };
+    }
+
+    if(i < items.length - 1) await new Promise(r => setTimeout(r, 150));
+  }
+
+  if(pbar) pbar.style.width = '100%';
+  loading.style.display = 'none';
+  grid.style.display = 'grid';
+  ts.textContent = 'Updated ' + new Date().toLocaleTimeString();
+  _eduRunning = false;
+  renderEduGrid();
+}
+
+function renderEduGrid() {
+  const grid = document.getElementById('edu-grid');
+  if(!grid) return;
+  const items = getEduItems();
+  const filtered = items.filter(item => {
+    if(_eduFilter === 'all')       return true;
+    if(_eduFilter === 'positions') return item.source === 'position';
+    if(_eduFilter === 'watchlist') return item.source === 'watch';
+    if(_eduFilter === 'history')   return item.source === 'history';
+    return true;
+  });
+
+  if(!filtered.length) {
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="ei">🔍</div><p>No stocks in this category.</p></div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(item => {
+    const cache = _eduCache[item.ticker] || {};
+    return buildEduCard(item, cache.quote || null, cache.candles || null);
+  }).join('');
+}
+
+// ── Technical Indicators ─────────────────────────────────────────────────────
+function eduRSI(closes, period=14) {
+  if(!closes || closes.length < period + 1) return null;
+  let gains = 0, losses = 0;
+  for(let i = closes.length - period; i < closes.length; i++) {
+    const d = closes[i] - closes[i-1];
+    if(d > 0) gains += d; else losses += Math.abs(d);
+  }
+  const ag = gains/period, al = losses/period;
+  if(al === 0) return 100;
+  return +(100 - 100/(1 + ag/al)).toFixed(1);
+}
+
+function eduSMA(closes, period) {
+  if(!closes || closes.length < period) return null;
+  const sl = closes.slice(-period);
+  return sl.reduce((a,b) => a+b, 0) / period;
+}
+
+// ── Card Builder ──────────────────────────────────────────────────────────────
+function buildEduCard(item, quote, candles) {
+  const { ticker, company, source, pos, wItem, hist } = item;
+
+  const price    = quote?.c    || pos?.curPrice || hist?.closePrice || 0;
+  const dp       = quote?.dp   || 0;
+  const high     = quote?.h    || 0;
+  const low      = quote?.l    || 0;
+  const open     = quote?.o    || 0;
+  const prevClose= quote?.pc   || 0;
+
+  let rsi=null, sma20=null, sma50=null;
+  if(candles?.c && candles.s === 'ok' && candles.c.length > 1) {
+    const closes = candles.c;
+    rsi   = eduRSI(closes, 14);
+    sma20 = eduSMA(closes, 20);
+    sma50 = eduSMA(closes, 50);
+  }
+
+  const analysis = genEduAnalysis({ price, dp, open, high, low, prevClose, rsi, sma20, sma50, pos, wItem, hist, source });
+
+  // Source badge
+  let srcBadge;
+  if(source === 'position') {
+    srcBadge = `<span class="badge ${pos?.posType==='Short'?'bg-r':'bg-b'}">${pos?.posType||'Long'}</span>`;
+  } else if(source === 'watch') {
+    srcBadge = `<span class="badge bg-y">Watchlist</span>`;
+  } else {
+    srcBadge = `<span class="badge" style="background:rgba(255,255,255,.07);color:var(--t2);">Historical</span>`;
+  }
+
+  const sigMap = { 'Strong Buy':'sb', 'Buy':'b', 'Hold':'h', 'Sell':'s', 'Strong Sell':'ss' };
+  const cardMap = { 'Strong Buy':'sig-sb', 'Buy':'sig-b', 'Hold':'sig-h', 'Sell':'sig-s', 'Strong Sell':'sig-ss' };
+  const sigCls  = sigMap[analysis.signal]  || 'h';
+  const cardCls = cardMap[analysis.signal] || 'sig-h';
+
+  const chgHtml = quote
+    ? `<span class="${dp>=0?'pup':'pdn'}">${dp>=0?'▲':'▼'} ${Math.abs(dp).toFixed(2)}%</span>`
+    : `<span style="color:var(--t3)">No data</span>`;
+
+  const actionCls = ['Strong Buy','Buy'].includes(analysis.signal) ? 'edu-action-buy'
+    : analysis.signal === 'Hold' ? 'edu-action-hold'
+    : 'edu-action-sell';
+
+  // Metrics rows
+  const mRows = [];
+  if(rsi !== null) {
+    const rc = rsi < 30 ? 'var(--green)' : rsi > 70 ? 'var(--red)' : 'var(--t1)';
+    const rl = rsi < 25 ? 'Deeply Oversold' : rsi < 35 ? 'Oversold' : rsi > 75 ? 'Heavily Overbought' : rsi > 65 ? 'Overbought' : 'Neutral Zone';
+    mRows.push(`<div class="edu-metric"><span class="edu-metric-label">RSI (14)</span><span style="color:${rc};font-weight:600;">${rsi} — ${rl}</span></div>`);
+  }
+  if(sma20 !== null) {
+    const abv = price >= sma20;
+    mRows.push(`<div class="edu-metric"><span class="edu-metric-label">20-Day SMA</span><span style="color:${abv?'var(--green)':'var(--red)'}">${f$f(sma20)} <small>${abv?'▲ Price Above':'▼ Price Below'}</small></span></div>`);
+  }
+  if(sma50 !== null) {
+    const abv = price >= sma50;
+    mRows.push(`<div class="edu-metric"><span class="edu-metric-label">50-Day SMA</span><span style="color:${abv?'var(--green)':'var(--red)'}">${f$f(sma50)} <small>${abv?'▲ Price Above':'▼ Price Below'}</small></span></div>`);
+  }
+  if(pos) {
+    const c = calcStock(pos);
+    mRows.push(`<div class="edu-metric"><span class="edu-metric-label">Your P&amp;L</span><span class="${c.pl>=0?'pup':'pdn'}" style="font-weight:600;">${c.pl>=0?'+':''}${f$f(c.pl)} (${fpct(c.plPct)})</span></div>`);
+    mRows.push(`<div class="edu-metric"><span class="edu-metric-label">Entry Price</span><span style="color:var(--t1)">${f$f(pos.buyPrice)} × ${pos.shares} shares</span></div>`);
+  }
+  if(hist) {
+    mRows.push(`<div class="edu-metric"><span class="edu-metric-label">Last Trade P&amp;L</span><span class="${(hist.realPL||0)>=0?'pup':'pdn'}">${(hist.realPL||0)>=0?'+':''}${f$f(hist.realPL||0)}</span></div>`);
+    mRows.push(`<div class="edu-metric"><span class="edu-metric-label">Closed At</span><span style="color:var(--t1)">${f$f(hist.closePrice)} on ${fd(hist.closeDate)}</span></div>`);
+  }
+  if(wItem && wItem.targetBuy) {
+    const diff = price > 0 ? ((price - wItem.targetBuy)/wItem.targetBuy*100) : 0;
+    const txt  = price <= wItem.targetBuy ? `🎯 At or below target!` : `${diff.toFixed(1)}% above target`;
+    mRows.push(`<div class="edu-metric"><span class="edu-metric-label">Your Buy Target</span><span style="color:${price<=wItem.targetBuy?'var(--green)':'var(--t2)'}">${f$f(wItem.targetBuy)} — ${txt}</span></div>`);
+  }
+  if(quote && high > low) {
+    const pct = ((price - low)/(high - low)*100).toFixed(0);
+    mRows.push(`<div class="edu-metric"><span class="edu-metric-label">Day Range Position</span><span style="color:var(--t1)">${pct}% of today's range</span></div>`);
+  }
+
+  // Confidence bar: map score to width %
+  const barW  = Math.min(100, Math.round((analysis.score + 2) / 4 * 100));
+  const barClr= analysis.score >= 0.6 ? 'var(--green)' : analysis.score <= -0.6 ? 'var(--red)' : 'var(--blue)';
+
+  return `
+<div class="edu-card ${cardCls}">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px;">
+    <div style="min-width:0;">
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+        <span class="ticker" style="font-size:15px;">${ticker}</span>
+        ${srcBadge}
+        <span class="edu-signal ${sigCls}">${analysis.signal}</span>
+      </div>
+      <div style="font-size:11px;color:var(--t3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${company}</div>
+    </div>
+    <div style="text-align:right;flex-shrink:0;">
+      <div style="font-size:18px;font-weight:700;">${price > 0 ? f$f(price) : '—'}</div>
+      <div style="font-size:12px;margin-top:2px;">${chgHtml}</div>
+    </div>
+  </div>
+
+  <div class="edu-score-bar" title="AI Confidence: ${analysis.signal}">
+    <div class="edu-score-fill" style="width:${barW}%;background:${barClr};"></div>
+  </div>
+
+  ${mRows.length ? `<div style="margin-top:10px;">${mRows.join('')}</div>` : ''}
+
+  <div class="edu-ai-box">
+    <div style="font-size:10px;font-weight:700;color:var(--blue);letter-spacing:.06em;margin-bottom:7px;">🤖 AI ANALYSIS</div>
+    ${analysis.commentary}
+  </div>
+
+  <div class="edu-action-box ${actionCls}">
+    💡 <strong>Suggestion:</strong> ${analysis.recommendation}
+  </div>
+</div>`;
+}
+
+// ── AI Signal Engine ──────────────────────────────────────────────────────────
+function genEduAnalysis({ price, dp, open, high, low, prevClose, rsi, sma20, sma50, pos, wItem, hist, source }) {
+  let score = 0;
+  const positives = [], cautions = [];
+
+  // 1 — RSI
+  if(rsi !== null) {
+    if(rsi < 25)      { score += 1.6; positives.push(`RSI is deeply oversold at ${rsi} — historically a strong reversal zone`); }
+    else if(rsi < 35) { score += 0.9; positives.push(`RSI at ${rsi} sits in oversold territory, signaling potential buying interest`); }
+    else if(rsi > 78) { score -= 1.6; cautions.push(`RSI is extremely overbought at ${rsi} — a pullback or consolidation is statistically likely`); }
+    else if(rsi > 68) { score -= 0.9; cautions.push(`RSI at ${rsi} indicates overbought conditions; momentum may soon exhaust`); }
+    else if(rsi >= 45 && rsi <= 55) { positives.push(`RSI at ${rsi} is in a healthy neutral zone — no extreme pressure in either direction`); }
+  }
+
+  // 2 — Moving average trend structure
+  if(sma20 !== null && sma50 !== null) {
+    if(price > sma20 && sma20 > sma50)      { score += 1.3; positives.push(`price is above both the 20 and 50-day moving averages — a textbook uptrend alignment`); }
+    else if(price < sma20 && sma20 < sma50) { score -= 1.3; cautions.push(`price is below both the 20 and 50-day moving averages, confirming a sustained downtrend`); }
+    else if(price > sma20 && price > sma50)  { score += 0.6; positives.push(`price holds above key moving averages despite the 20-day dipping, showing resilience`); }
+    else if(price < sma20 && price > sma50)  { score -= 0.4; cautions.push(`price pulled below the 20-day SMA but still holds the 50-day — a key support test`); }
+    else if(price < sma50)                   { score -= 0.7; cautions.push(`price is under the 50-day moving average, reflecting medium-term bearish momentum`); }
+
+    // Golden/death cross signal
+    if(Math.abs(sma20 - sma50)/sma50 < 0.01) {
+      cautions.push(`the 20 and 50-day moving averages are converging — watch for a crossover signal`);
+    }
+  } else if(sma20 !== null) {
+    if(price > sma20)  { score += 0.5; positives.push(`price is trading above the 20-day SMA, showing near-term strength`); }
+    else               { score -= 0.5; cautions.push(`price is below its 20-day SMA — short-term trend is negative`); }
+  }
+
+  // 3 — Daily momentum
+  if(dp > 4)       { score += 0.9; positives.push(`a powerful +${dp.toFixed(2)}% day signals strong institutional buying`); }
+  else if(dp > 1.5){ score += 0.4; positives.push(`a healthy +${dp.toFixed(2)}% gain today shows continued buying interest`); }
+  else if(dp < -4) { score -= 0.9; cautions.push(`a sharp ${dp.toFixed(2)}% drop today reflects heavy selling pressure`); }
+  else if(dp < -1.5){ score -= 0.4; cautions.push(`today's ${dp.toFixed(2)}% decline adds to near-term headwinds`); }
+
+  // 4 — Intraday position (where in day's range)
+  if(high > low && price > 0) {
+    const rp = (price - low) / (high - low);
+    if(rp > 0.82)      { score += 0.3; positives.push(`trading near the top of today's range shows buyers in control`); }
+    else if(rp < 0.18) { score -= 0.3; cautions.push(`trading near the bottom of today's range signals intraday selling dominance`); }
+  }
+
+  // 5 — Gap from open
+  if(open > 0 && price > 0) {
+    const gp = (price - open) / open * 100;
+    if(gp > 2)   positives.push(`price has surged ${gp.toFixed(1)}% from the open — intraday momentum is accelerating`);
+    else if(gp < -2) cautions.push(`price has slipped ${Math.abs(gp).toFixed(1)}% below the open — sellers have been active all session`);
+  }
+
+  // 6 — Position-specific context
+  if(pos) {
+    const c = calcStock(pos);
+    if(pos.posType === 'Long') {
+      if(c.plPct > 40)       { positives.push(`your long position is up a remarkable ${c.plPct.toFixed(1)}% — consider protecting these gains with a trailing stop`); }
+      else if(c.plPct > 15)  { positives.push(`your position is up ${c.plPct.toFixed(1)}% — a solid gain; think about whether you want to hold or take partial profits`); }
+      else if(c.plPct < -20) { cautions.push(`your long is down ${Math.abs(c.plPct).toFixed(1)}% — reassess whether your original thesis still holds`); }
+      else if(c.plPct < -10) { cautions.push(`position is down ${Math.abs(c.plPct).toFixed(1)}% — monitor closely and have a stop-loss plan`); }
+    } else {
+      if(c.plPct > 25)       { positives.push(`your short is profitable at +${c.plPct.toFixed(1)}% — consider covering a portion to lock in gains`); }
+      else if(c.plPct < -15) { cautions.push(`this short is moving against you by ${Math.abs(c.plPct).toFixed(1)}% — the bullish signals suggest covering to limit losses`); }
+    }
+  }
+
+  // ── Map score to signal ───────────────────────────────────────────────────
+  let signal;
+  if(score >= 1.8)       signal = 'Strong Buy';
+  else if(score >= 0.7)  signal = 'Buy';
+  else if(score >= -0.7) signal = 'Hold';
+  else if(score >= -1.8) signal = 'Sell';
+  else                   signal = 'Strong Sell';
+
+  // ── Build commentary ──────────────────────────────────────────────────────
+  let commentary = '';
+  if(!quote && !price) {
+    commentary = 'Live data is unavailable for this ticker. Click <strong>Refresh Analysis</strong> to fetch the latest market data, or verify your Finnhub API key in Settings.';
+  } else {
+    if(positives.length) {
+      commentary += `<strong style="color:var(--green);">✅ Positive signals:</strong> `;
+      commentary += positives.slice(0,2).map((p,i) => i===0 ? p.charAt(0).toUpperCase()+p.slice(1) : p).join('; ');
+      commentary += '. ';
+    }
+    if(cautions.length) {
+      commentary += `<strong style="color:var(--red);">⚠️ Watch out:</strong> `;
+      commentary += cautions.slice(0,2).map((c,i) => i===0 ? c.charAt(0).toUpperCase()+c.slice(1) : c).join('; ');
+      commentary += '. ';
+    }
+    if(!positives.length && !cautions.length) {
+      commentary = 'Signals are balanced with no clear edge. This is a neutral environment — patience is often the best position when data is ambiguous.';
+    }
+  }
+
+  // Add educational context blurb
+  const edu = {
+    'Strong Buy':  'Multiple technical factors align bullishly. This is the type of setup where risk/reward tends to favor longs.',
+    'Buy':         'More bullish signals than bearish. A measured position with a clear stop-loss makes sense here.',
+    'Hold':        'Mixed or neutral conditions. The market is not giving a strong directional signal — wait for clarity.',
+    'Sell':        'Bearish signals outweigh bullish ones. If holding, consider protecting profits or reducing exposure.',
+    'Strong Sell': 'Multiple bearish indicators are stacking. High-risk environment — defensive positioning is warranted.'
+  };
+  commentary += `<br><span style="color:var(--t3);font-size:11px;font-style:italic;">📚 ${edu[signal]}</span>`;
+
+  // ── Position-aware recommendation ────────────────────────────────────────
+  let recommendation = '';
+  if(pos) {
+    const c = calcStock(pos);
+    if(pos.posType === 'Long') {
+      if(signal === 'Strong Buy')    recommendation = `Continue holding. Set a trailing stop below recent lows to protect your ${c.pl >= 0 ? f$f(c.pl) + ' gain' : 'position'}.`;
+      else if(signal === 'Buy')      recommendation = c.pl >= 0 ? `Hold and let the trend work. Watch for a breakout to consider adding.` : `Hold with a defined stop. The bullish backdrop supports recovery.`;
+      else if(signal === 'Hold')     recommendation = c.plPct > 15 ? `Consider selling 25–50% to lock in partial profits while letting the rest ride.` : `No urgent action needed. Monitor support levels and reassess if price breaks down.`;
+      else if(signal === 'Sell')     recommendation = c.pl >= 0 ? `Consider taking profits — the bullish case is weakening. Lock in your ${f$f(c.pl)} gain.` : `Tighten your stop-loss or exit to limit further downside.`;
+      else                           recommendation = `Consider exiting this position. Multiple bearish signals suggest the downside risk outweighs the reward of staying in.`;
+    } else {
+      // Short position
+      if(signal === 'Strong Sell' || signal === 'Sell') recommendation = `Short thesis is confirmed by technicals. Hold and consider adding on price bounces toward resistance.`;
+      else if(signal === 'Hold')                         recommendation = c.plPct > 10 ? `Consider covering a portion to bank gains while keeping a smaller short position.` : `Hold with a defined stop above recent highs.`;
+      else                                               recommendation = `Bullish signals are working against your short. Consider covering to cut losses before they grow.`;
+    }
+  } else if(wItem) {
+    const atTarget = wItem.targetBuy && price > 0 && price <= wItem.targetBuy;
+    if(signal === 'Strong Buy')    recommendation = atTarget ? `🎯 Price is at or below your buy target of ${f$f(wItem.targetBuy)}! Strong entry signal — this looks like the setup you've been waiting for.` : `Strong buy signal. Price hasn't hit your target of ${f$f(wItem.targetBuy||0)} but conditions are compelling — consider entering a partial position.`;
+    else if(signal === 'Buy')      recommendation = atTarget ? `Price is near your buy target and conditions look positive. A gradual entry makes sense here.` : `Positive signal but price is still above your target. Wait patiently or consider entering a small position to start tracking.`;
+    else if(signal === 'Hold')     recommendation = `Neutral signal. Continue watching. ${atTarget ? 'Price is near your target — wait for a clearer entry signal.' : 'No rush to act.'}`;
+    else                           recommendation = `Bearish signals suggest this is not the right time to enter a long position. The stock may move closer to your target — patience is rewarded.`;
+  } else if(source === 'history') {
+    if(signal === 'Strong Buy' || signal === 'Buy') recommendation = `You've traded this before. Current conditions look favorable — it may be worth revisiting as a new position.`;
+    else if(signal === 'Hold')                       recommendation = `Mixed signals on a stock you've previously traded. Wait for a stronger signal before re-entering.`;
+    else                                             recommendation = `Bearish conditions on a past holding. Not an ideal re-entry point right now.`;
+  } else {
+    recommendation = signal === 'Strong Buy' || signal === 'Buy' ? `Conditions look favorable for initiating a position.`
+      : signal === 'Hold' ? `No clear directional edge — observe before acting.`
+      : `Bearish setup — this is not an ideal environment for a long entry.`;
+  }
+
+  return { signal, score, commentary, recommendation };
+}
 
 </script>
 </body>
