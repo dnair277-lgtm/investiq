@@ -536,18 +536,8 @@ select option{background:var(--card);}
     </div>
   </div>
 
-  <!-- Banner -->
-  <div id="lb-banner" class="alert a-info" style="display:flex;align-items:flex-start;gap:10px;">
-    <span style="font-size:22px;flex-shrink:0;">🔌</span>
-    <div>
-      <strong>Backend not connected yet.</strong> The leaderboard UI is fully built and ready.
-      Once a backend is wired up, real scores from all players will appear here automatically.
-      For now it shows demo data so you can see exactly how it will look.
-      <br><span style="font-size:11px;color:var(--t3);margin-top:4px;display:block;">
-        Set your display name in ⚙️ Settings → Leaderboard, then opt in to share your score when the backend is live.
-      </span>
-    </div>
-  </div>
+  <!-- Banner — shown/hidden by renderLeaderboard() -->
+  <div id="lb-banner" style="display:none;"></div>
 
   <!-- Top 3 podium -->
   <div id="lb-podium" style="display:flex;justify-content:center;align-items:flex-end;gap:12px;margin-bottom:20px;flex-wrap:wrap;"></div>
@@ -2710,7 +2700,27 @@ async function renderLeaderboard() {
   };
 
   // Merge local entry with demo/real data
-  let entries = LB_CONNECTED ? (await lbFetchScoresSafe()) : [...LB_MOCK];
+  let lbLive = false;
+  let entries;
+  if(LB_CONNECTED) {
+    try { entries = await lbFetchScores(); lbLive = true; } catch(e) { entries = [...LB_MOCK]; }
+  } else {
+    entries = [...LB_MOCK];
+  }
+
+  // Banner
+  const banner = document.getElementById('lb-banner');
+  if(banner) {
+    if(!lbLive) {
+      banner.style.display = 'flex';
+      banner.className = 'alert a-info';
+      banner.style.alignItems = 'flex-start';
+      banner.style.gap = '10px';
+      banner.innerHTML = '<span style="font-size:22px;flex-shrink:0;">🔌</span><div><strong>Leaderboard table not found in Supabase.</strong> The backend code is connected — you just need to create the <code>leaderboard_scores</code> table. See the setup instructions (ask your developer). Showing demo data for now.</div>';
+    } else {
+      banner.style.display = 'none';
+    }
+  }
 
   // Remove any previous "You" entry, add current
   if (D.settings.lbOptIn !== false) {
@@ -2852,61 +2862,67 @@ async function renderEdu(force=false) {
   if(_eduRunning && !force) return;
   _eduRunning = true;
 
-  const grid = document.getElementById('edu-grid');
+  const grid    = document.getElementById('edu-grid');
   const loading = document.getElementById('edu-loading');
   const emptyEl = document.getElementById('edu-empty');
-  const ts = document.getElementById('edu-ts');
-  const pbar = document.getElementById('edu-pbar');
+  const ts      = document.getElementById('edu-ts');
+  const pbar    = document.getElementById('edu-pbar');
 
-  const items = getEduItems();
+  try {
+    const items = getEduItems();
 
-  if(!items.length) {
-    loading.style.display = 'none';
-    grid.style.display = 'none';
-    emptyEl.style.display = 'block';
-    emptyEl.innerHTML = '<div class="empty"><div class="ei">🎓</div><p>No stocks to analyze yet.</p><p style="font-size:12px;">Add stocks to your portfolio or watchlist and the AI will start monitoring them here.</p></div>';
-    _eduRunning = false;
-    return;
-  }
-
-  loading.style.display = 'block';
-  grid.style.display = 'none';
-  emptyEl.style.display = 'none';
-  if(pbar) pbar.style.width = '0%';
-
-  const now = Date.now();
-  const CACHE_TTL = 4 * 60 * 1000; // 4-min cache
-
-  const toTs  = Math.floor(now / 1000);
-  const fromTs = toTs - (90 * 24 * 3600); // 90 days of candles
-
-  for(let i = 0; i < items.length; i++) {
-    const { ticker } = items[i];
-    const prog = document.getElementById('edu-progress');
-    if(prog) prog.textContent = `Analyzing ${ticker}… (${i+1} of ${items.length})`;
-    if(pbar) pbar.style.width = ((i+1)/items.length*100) + '%';
-
-    if(!force && _eduCache[ticker] && (now - _eduCache[ticker].lastFetch) < CACHE_TTL) continue;
-
-    try {
-      const [quote, candles] = await Promise.all([
-        callFinnhub('quote', { symbol: ticker }),
-        callFinnhub('candle', { symbol: ticker, resolution: 'D', from: fromTs, to: toTs }).catch(() => null)
-      ]);
-      _eduCache[ticker] = { quote, candles, lastFetch: now };
-    } catch(e) {
-      _eduCache[ticker] = { quote: null, candles: null, lastFetch: now };
+    if(!items.length) {
+      loading.style.display = 'none';
+      grid.style.display    = 'none';
+      emptyEl.style.display = 'block';
+      emptyEl.innerHTML = '<div class="empty"><div class="ei">🎓</div><p>No stocks to analyze yet.</p><p style="font-size:12px;">Add stocks to your portfolio or watchlist and the AI will start monitoring them here.</p></div>';
+      return;
     }
 
-    if(i < items.length - 1) await new Promise(r => setTimeout(r, 150));
-  }
+    loading.style.display = 'block';
+    grid.style.display    = 'none';
+    emptyEl.style.display = 'none';
+    if(pbar) pbar.style.width = '0%';
 
-  if(pbar) pbar.style.width = '100%';
-  loading.style.display = 'none';
-  grid.style.display = 'grid';
-  ts.textContent = 'Updated ' + new Date().toLocaleTimeString();
-  _eduRunning = false;
-  renderEduGrid();
+    const now    = Date.now();
+    const CACHE_TTL = 4 * 60 * 1000;
+    const toTs   = Math.floor(now / 1000);
+    const fromTs = toTs - (90 * 24 * 3600);
+
+    for(let i = 0; i < items.length; i++) {
+      const { ticker } = items[i];
+      const prog = document.getElementById('edu-progress');
+      if(prog) prog.textContent = `Analyzing ${ticker}… (${i+1} of ${items.length})`;
+      if(pbar) pbar.style.width = ((i+1)/items.length*100) + '%';
+
+      if(!force && _eduCache[ticker] && (now - _eduCache[ticker].lastFetch) < CACHE_TTL) continue;
+
+      try {
+        const [q, c] = await Promise.all([
+          callFinnhub('quote', { symbol: ticker }),
+          callFinnhub('candle', { symbol: ticker, resolution: 'D', from: fromTs, to: toTs }).catch(() => null)
+        ]);
+        _eduCache[ticker] = { quote: q, candles: c, lastFetch: now };
+      } catch(e) {
+        _eduCache[ticker] = { quote: null, candles: null, lastFetch: now };
+      }
+
+      if(i < items.length - 1) await new Promise(r => setTimeout(r, 150));
+    }
+
+    if(pbar) pbar.style.width = '100%';
+    loading.style.display = 'none';
+    grid.style.display    = 'grid';
+    if(ts) ts.textContent = 'Updated ' + new Date().toLocaleTimeString();
+    renderEduGrid();
+
+  } catch(err) {
+    console.error('Education tab error:', err);
+    if(loading) loading.style.display = 'none';
+    if(grid) { grid.style.display = 'block'; grid.innerHTML = '<div class="empty"><div class="ei">⚠️</div><p>Something went wrong loading analysis.</p><p style="font-size:12px;">'+err.message+'</p></div>'; }
+  } finally {
+    _eduRunning = false;
+  }
 }
 
 function renderEduGrid() {
@@ -2927,8 +2943,13 @@ function renderEduGrid() {
   }
 
   grid.innerHTML = filtered.map(item => {
-    const cache = _eduCache[item.ticker] || {};
-    return buildEduCard(item, cache.quote || null, cache.candles || null);
+    try {
+      const cache = _eduCache[item.ticker] || {};
+      return buildEduCard(item, cache.quote || null, cache.candles || null);
+    } catch(e) {
+      console.error('Card error for', item.ticker, e);
+      return `<div class="card" style="color:var(--t3);font-size:12px;padding:20px;"><strong>${item.ticker}</strong><br>Could not render analysis: ${e.message}</div>`;
+    }
   }).join('');
 }
 
@@ -3142,7 +3163,7 @@ function genEduAnalysis({ price, dp, open, high, low, prevClose, rsi, sma20, sma
 
   // ── Build commentary ──────────────────────────────────────────────────────
   let commentary = '';
-  if(!quote && !price) {
+  if(!price) {
     commentary = 'Live data is unavailable for this ticker. Click <strong>Refresh Analysis</strong> to fetch the latest market data, or verify your Finnhub API key in Settings.';
   } else {
     if(positives.length) {
