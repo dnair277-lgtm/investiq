@@ -185,9 +185,12 @@ select option{background:var(--card);}
 .auth-form{display:none;}.auth-form.on{display:block;}
 .auth-error{background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.25);color:var(--red);border-radius:7px;padding:8px 12px;font-size:12px;margin-bottom:12px;display:none;}
 .auth-success{background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.25);color:var(--green);border-radius:7px;padding:8px 12px;font-size:12px;margin-bottom:12px;display:none;}
-.auth-footer{text-align:center;margin-top:16px;}
-.auth-demo-btn{background:none;border:none;color:var(--t3);font-size:12px;cursor:pointer;text-decoration:underline;}
-.auth-demo-btn:hover{color:var(--t2);}
+.auth-footer{margin-top:20px;}
+.auth-divider{display:flex;align-items:center;gap:10px;margin-bottom:16px;color:var(--t3);font-size:11px;}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.auth-demo-btn{width:100%;padding:11px 14px;background:var(--card);border:1px solid var(--border2);color:var(--t1);font-size:13px;font-weight:600;cursor:pointer;border-radius:8px;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.auth-demo-btn:hover{background:var(--card2);border-color:var(--t3);}
+.auth-demo-label{font-size:11px;color:var(--t3);text-align:center;margin-top:8px;line-height:1.4;}
 .auth-remember{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2);margin:8px 0 12px;}
 .auth-remember input{width:auto;accent-color:var(--green);}
 .user-chip{display:flex;align-items:center;gap:8px;margin-left:8px;}
@@ -298,7 +301,12 @@ select option{background:var(--card);}
     </div>
 
     <div class="auth-footer">
-      <button class="auth-demo-btn" onclick="demoMode()">👀 Explore in Demo Mode (no account needed)</button>
+      <div class="auth-divider">or</div>
+      <button class="auth-demo-btn" onclick="demoMode()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 10-16 0"/></svg>
+        Continue with Demo Account
+      </button>
+      <p class="auth-demo-label">No sign-up needed — explore all features with sample data</p>
     </div>
   </div>
   <div style="margin-top:16px;font-size:11px;color:var(--t3);text-align:center;">
@@ -309,41 +317,41 @@ select option{background:var(--card);}
 <nav class="navbar">
   <div class="logo">Invest<em>IQ</em></div>
   <div class="navtabs">
-    <button class="ntab on" onclick="go('dash')">📊 Dashboard</button>
-    <button class="ntab" onclick="go('stocks')">📈 Stocks</button>
-    <button class="ntab" onclick="go('history')">📉 History</button>
-    <button class="ntab" onclick="go('bonds')">🏦 Bonds</button>
-    <button class="ntab" onclick="go('bondhist')">📋 Bond Hist.</button>
-    <button class="ntab" onclick="go('divers')">🥧 Diversify</button>
-    <button class="ntab" onclick="go('watchlist')">👁 Watchlist</button>
-    <button class="ntab" onclick="go('edu')">🎓 Education</button>
-    <button class="ntab" onclick="go('news')">📰 News</button>
-    <button class="ntab" onclick="go('sp500')">🎯 S&P 500</button>
-    <button class="ntab" onclick="go('growth')">📅 Growth</button>
-    <button class="ntab" onclick="go('leaderboard')">🏆 Leaderboard</button>
-    <button class="ntab" onclick="go('settings')">⚙️ Settings</button>
+    <button class="ntab on" onclick="go('dash')">Dashboard</button>
+    <button class="ntab" onclick="go('stocks')">Stocks</button>
+    <button class="ntab" onclick="go('history')">History</button>
+    <button class="ntab" onclick="go('bonds')">Bonds</button>
+    <button class="ntab" onclick="go('bondhist')">Bond Hist.</button>
+    <button class="ntab" onclick="go('divers')">Diversify</button>
+    <button class="ntab" onclick="go('watchlist')">Watchlist</button>
+    <button class="ntab" onclick="go('edu')">Analysis</button>
+    <button class="ntab" onclick="go('news')">News</button>
+    <button class="ntab" onclick="go('sp500')">S&amp;P 500</button>
+    <button class="ntab" onclick="go('growth')">Growth</button>
+    <button class="ntab" onclick="go('leaderboard')">Leaderboard</button>
+    <button class="ntab" onclick="go('settings')">Settings</button>
   </div>
   <div class="nav-r" style="display:flex;align-items:center;gap:6px;">
-    <span id="live-ts" style="font-size:10px;color:var(--t3);"></span> <button class="btn bs sm" onclick="refreshPrices()" title="Fetch live prices">🔄 Prices</button>
+    <span id="live-ts" style="font-size:10px;color:var(--t3);"></span> <button class="btn bs sm" onclick="refreshPrices()" title="Fetch live prices">Prices</button>
     <div class="user-chip" id="nav-user-chip"></div>
   </div>
 </nav>
 
 <!-- MOBILE NAV -->
 <div class="mnav"><div class="mnav-row">
-  <button class="mbtn on" onclick="go('dash')"><span class="ic">📊</span>Dash</button>
-  <button class="mbtn" onclick="go('stocks')"><span class="ic">📈</span>Stocks</button>
-  <button class="mbtn" onclick="go('history')"><span class="ic">📉</span>Hist.</button>
-  <button class="mbtn" onclick="go('bonds')"><span class="ic">🏦</span>Bonds</button>
-  <button class="mbtn" onclick="go('bondhist')"><span class="ic">📋</span>BndHist</button>
-  <button class="mbtn" onclick="go('divers')"><span class="ic">🥧</span>Diversify</button>
-  <button class="mbtn" onclick="go('watchlist')"><span class="ic">👁</span>Watch</button>
-  <button class="mbtn" onclick="go('edu')"><span class="ic">🎓</span>Edu</button>
-  <button class="mbtn" onclick="go('news')"><span class="ic">📰</span>News</button>
-  <button class="mbtn" onclick="go('sp500')"><span class="ic">🎯</span>S&P500</button>
-  <button class="mbtn" onclick="go('growth')"><span class="ic">📅</span>Growth</button>
-  <button class="mbtn" onclick="go('leaderboard')"><span class="ic">🏆</span>Board</button>
-  <button class="mbtn" onclick="go('settings')"><span class="ic">⚙️</span>Settings</button>
+  <button class="mbtn on" onclick="go('dash')"><span class="ic">▦</span>Dash</button>
+  <button class="mbtn" onclick="go('stocks')"><span class="ic">↗</span>Stocks</button>
+  <button class="mbtn" onclick="go('history')"><span class="ic">↙</span>Hist.</button>
+  <button class="mbtn" onclick="go('bonds')"><span class="ic">◈</span>Bonds</button>
+  <button class="mbtn" onclick="go('bondhist')"><span class="ic">≡</span>BndHist</button>
+  <button class="mbtn" onclick="go('divers')"><span class="ic">◕</span>Divers.</button>
+  <button class="mbtn" onclick="go('watchlist')"><span class="ic">◎</span>Watch</button>
+  <button class="mbtn" onclick="go('edu')"><span class="ic">∿</span>Analysis</button>
+  <button class="mbtn" onclick="go('news')"><span class="ic">⊡</span>News</button>
+  <button class="mbtn" onclick="go('sp500')"><span class="ic">◈</span>S&amp;P500</button>
+  <button class="mbtn" onclick="go('growth')"><span class="ic">∷</span>Growth</button>
+  <button class="mbtn" onclick="go('leaderboard')"><span class="ic">◆</span>Board</button>
+  <button class="mbtn" onclick="go('settings')"><span class="ic">◉</span>Settings</button>
 </div></div>
 
 <div class="main">
@@ -351,10 +359,10 @@ select option{background:var(--card);}
 <!-- ══ DASHBOARD ══ -->
 <div id="p-dash" class="page on">
   <div class="ph">
-    <div class="phtitle">📊 Performance Summary</div>
+    <div class="phtitle">Performance Summary</div>
     <div class="phact">
       <span id="dash-ts" style="font-size:11px;color:var(--t3);"></span>
-      <button class="btn bs sm" onclick="quickSnapshot()">📸 Log Snapshot</button>
+      <button class="btn bs sm" onclick="quickSnapshot()">Log Snapshot</button>
     </div>
   </div>
   <div class="g4" id="d-stats"></div>
@@ -368,9 +376,9 @@ select option{background:var(--card);}
 <!-- ══ STOCKS ══ -->
 <div id="p-stocks" class="page">
   <div class="ph">
-    <div class="phtitle">📈 Stock & Mutual Fund Portfolio</div>
+    <div class="phtitle">Stock &amp; Mutual Fund Portfolio</div>
     <div class="phact">
-      <button class="btn bs sm" onclick="refreshPrices()">🔄 Live Prices</button>
+      <button class="btn bs sm" onclick="refreshPrices()">Refresh Prices</button>
       <button class="btn bg" onclick="openStock()">+ Add Position</button>
     </div>
   </div>
@@ -392,7 +400,7 @@ select option{background:var(--card);}
 
 <!-- ══ TRADE HISTORY ══ -->
 <div id="p-history" class="page">
-  <div class="ph"><div class="phtitle">📉 Stock & Mutual Fund History</div></div>
+  <div class="ph"><div class="phtitle">Stock &amp; Mutual Fund History</div></div>
   <div class="g3" id="h-stats"></div>
   <div class="tw">
     <table>
@@ -411,7 +419,7 @@ select option{background:var(--card);}
 <!-- ══ BONDS ══ -->
 <div id="p-bonds" class="page">
   <div class="ph">
-    <div class="phtitle">🏦 Bond Portfolio</div>
+    <div class="phtitle">Bond Portfolio</div>
     <div class="phact"><button class="btn bg" onclick="openBond()">+ Add Bond</button></div>
   </div>
   <div class="g3" id="b-stats"></div>
@@ -432,7 +440,7 @@ select option{background:var(--card);}
 
 <!-- ══ BOND HISTORY ══ -->
 <div id="p-bondhist" class="page">
-  <div class="ph"><div class="phtitle">📋 Bond History</div></div>
+  <div class="ph"><div class="phtitle">Bond History</div></div>
   <div class="g3" id="bh-stats"></div>
   <div class="tw">
     <table>
@@ -449,7 +457,7 @@ select option{background:var(--card);}
 
 <!-- ══ DIVERSIFICATION ══ -->
 <div id="p-divers" class="page">
-  <div class="ph"><div class="phtitle">🥧 Diversification Tracker</div></div>
+  <div class="ph"><div class="phtitle">Diversification Tracker</div></div>
   <div class="g2b" style="margin-bottom:16px;">
     <div class="card"><div class="clabel" style="margin-bottom:10px;">Holding Strategy</div><div id="div-hold"></div></div>
     <div class="card"><div class="clabel" style="margin-bottom:10px;">Investment Type Mix</div><div id="div-type"></div></div>
@@ -458,13 +466,13 @@ select option{background:var(--card);}
     <div class="card"><div class="clabel">Holding Strategy</div><div class="ch"><canvas id="ch-dh"></canvas></div></div>
     <div class="card"><div class="clabel">Investment Type</div><div class="ch"><canvas id="ch-dt"></canvas></div></div>
   </div>
-  <div class="card"><div class="clabel" style="margin-bottom:10px;">💡 Diversification Analysis</div><div id="div-tips"></div></div>
+  <div class="card"><div class="clabel" style="margin-bottom:10px;">Diversification Analysis</div><div id="div-tips"></div></div>
 </div>
 
 <!-- ══ WATCHLIST ══ -->
 <div id="p-watchlist" class="page">
   <div class="ph">
-    <div class="phtitle">👁 Watchlist</div>
+    <div class="phtitle">Watchlist</div>
     <div class="phact"><button class="btn bg" onclick="openWatch()">+ Add to Watchlist</button></div>
   </div>
   <div class="tw">
@@ -482,8 +490,8 @@ select option{background:var(--card);}
 <!-- ══ NEWS ══ -->
 <div id="p-news" class="page">
   <div class="ph">
-    <div class="phtitle">📰 Live News</div>
-    <div class="phact"><button class="btn bs sm" onclick="renderNews()">🔄 Refresh</button></div>
+    <div class="phtitle">Live News</div>
+    <div class="phact"><button class="btn bs sm" onclick="renderNews()">Refresh</button></div>
   </div>
   <div class="alert a-info">Click any link to read news for your portfolio tickers on trusted financial sites. Add stocks or watchlist items to populate this page.</div>
   <div class="card" id="news-box"></div>
@@ -492,8 +500,8 @@ select option{background:var(--card);}
 <!-- ══ S&P 500 ══ -->
 <div id="p-sp500" class="page">
   <div class="ph">
-    <div class="phtitle">🎯 S&P 500 Benchmark</div>
-    <div class="phact"><button class="btn bg" onclick="openSP()">✏️ Update Benchmark</button></div>
+    <div class="phtitle">S&amp;P 500 Benchmark</div>
+    <div class="phact"><button class="btn bg" onclick="openSP()">Update Benchmark</button></div>
   </div>
   <div class="alert a-info"><strong>What is this?</strong> The S&P 500 tracks America's 500 biggest companies. It's used as a benchmark — if you beat it, you're doing better than most professional fund managers!</div>
   <div class="g4" id="sp-stats"></div>
@@ -505,7 +513,7 @@ select option{background:var(--card);}
 <!-- ══ PORTFOLIO GROWTH ══ -->
 <div id="p-growth" class="page">
   <div class="ph">
-    <div class="phtitle">📅 Portfolio Growth</div>
+    <div class="phtitle">Portfolio Growth</div>
     <div class="phact"><button class="btn bs sm" onclick="openGrowth()">+ Log Entry</button></div>
   </div>
   <div class="card" style="margin-bottom:16px;">
@@ -528,11 +536,11 @@ select option{background:var(--card);}
 <!-- ══ LEADERBOARD ══ -->
 <div id="p-leaderboard" class="page">
   <div class="ph">
-    <div class="phtitle">🏆 Leaderboard</div>
+    <div class="phtitle">Leaderboard</div>
     <div class="phact">
       <span id="lb-status-badge"></span>
-      <button class="btn bs sm" onclick="lbRefresh()">🔄 Refresh</button>
-      <button class="btn bg" id="lb-submit-btn" onclick="lbSubmit()">📤 Submit My Score</button>
+      <button class="btn bs sm" onclick="lbRefresh()">Refresh</button>
+      <button class="btn bg" id="lb-submit-btn" onclick="lbSubmit()">Submit My Score</button>
     </div>
   </div>
 
@@ -566,10 +574,10 @@ select option{background:var(--card);}
   <div class="card" style="margin-top:16px;">
     <div class="clabel" style="margin-bottom:10px;">How the Leaderboard Works</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;font-size:13px;color:var(--t2);line-height:1.6;">
-      <div><strong style="color:var(--t1);">📊 Ranking Metric</strong><br>Players are ranked by <strong style="color:var(--green);">Portfolio Return %</strong> — your total P&L divided by your starting capital. This levels the playing field regardless of how much you invest.</div>
-      <div><strong style="color:var(--t1);">🔒 Privacy First</strong><br>Participation is <strong style="color:var(--t1);">opt-in only</strong>. Enable sharing in Settings → Leaderboard. You control your display name — your real name is never shared.</div>
-      <div><strong style="color:var(--t1);">🏅 Badges</strong><br>Earn badges based on your return: Rookie (0–5%), Apprentice (5–15%), Pro (15–30%), Expert (30–50%), Legend (50%+). Beat the S&P 500 to earn the ⚡ Market Beater badge.</div>
-      <div><strong style="color:var(--t1);">⚡ Coming Soon</strong><br>Weekly/monthly leaderboards, sector-specific rankings, and a "Beat the Market" challenge. Backend connection required — check Settings for status.</div>
+      <div><strong style="color:var(--t1);">Ranking Metric</strong><br>Players are ranked by <strong style="color:var(--green);">Portfolio Return %</strong> — your total P&L divided by your starting capital. This levels the playing field regardless of how much you invest.</div>
+      <div><strong style="color:var(--t1);">Privacy First</strong><br>Participation is <strong style="color:var(--t1);">opt-in only</strong>. Enable sharing in Settings → Leaderboard. You control your display name — your real name is never shared.</div>
+      <div><strong style="color:var(--t1);">Badges</strong><br>Earn badges based on your return: Rookie (0–5%), Apprentice (5–15%), Pro (15–30%), Expert (30–50%), Legend (50%+). Beat the S&P 500 to earn the ⚡ Market Beater badge.</div>
+      <div><strong style="color:var(--t1);">Coming Soon</strong><br>Weekly/monthly leaderboards, sector-specific rankings, and a "Beat the Market" challenge. Backend connection required — check Settings for status.</div>
     </div>
   </div>
 </div>
@@ -577,14 +585,14 @@ select option{background:var(--card);}
 <!-- ══ EDUCATION / AI ANALYSIS ══ -->
 <div id="p-edu" class="page">
   <div class="ph">
-    <div class="phtitle">🎓 Education &amp; AI Analysis</div>
+    <div class="phtitle">AI Analysis</div>
     <div class="phact">
       <span id="edu-ts" style="font-size:11px;color:var(--t3);margin-right:8px;"></span>
-      <button class="btn bs sm" onclick="renderEdu(true)">🔄 Refresh Analysis</button>
+      <button class="btn bs sm" onclick="renderEdu(true)">Refresh Analysis</button>
     </div>
   </div>
   <div class="alert a-info" style="margin-bottom:16px;">
-    <strong>🤖 AI Market Intelligence</strong> — Real-time technical analysis for every stock you're watching or holding. The AI monitors price action, RSI, moving averages, and your position performance to surface personalized insights. <em>For educational purposes only — not financial advice.</em>
+    <strong>AI Market Intelligence</strong> — Real-time technical analysis for every stock you're watching or holding. The AI monitors price action, RSI, moving averages, and your position performance to surface personalized insights. <em>For educational purposes only — not financial advice.</em>
   </div>
   <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
     <button class="btn bs sm edu-filter on" onclick="setEduFilter('all')">All Stocks</button>
@@ -593,7 +601,7 @@ select option{background:var(--card);}
     <button class="btn bs sm edu-filter" onclick="setEduFilter('history')">Historical</button>
   </div>
   <div id="edu-loading" style="display:none;text-align:center;padding:60px 20px;">
-    <div style="font-size:40px;margin-bottom:16px;">🤖</div>
+    
     <div style="font-size:15px;font-weight:600;color:var(--t1);">AI is analyzing the market…</div>
     <div style="font-size:12px;color:var(--t3);margin-top:6px;" id="edu-progress">Fetching live data</div>
     <div style="margin:20px auto;width:200px;height:4px;background:var(--bg);border-radius:2px;overflow:hidden;">
@@ -606,7 +614,7 @@ select option{background:var(--card);}
 
 <!-- ══ SETTINGS ══ -->
 <div id="p-settings" class="page">
-  <div class="ph"><div class="phtitle">⚙️ Settings</div></div>
+  <div class="ph"><div class="phtitle">Settings</div></div>
   <div class="card" style="margin-bottom:12px;">
     <div class="clabel" style="margin-bottom:12px;">Portfolio Configuration</div>
     <div class="srow">
@@ -630,7 +638,7 @@ select option{background:var(--card);}
     </div>
   </div>
   <div class="card" style="margin-bottom:12px;">
-    <div class="clabel" style="margin-bottom:12px;">👤 Account</div>
+    <div class="clabel" style="margin-bottom:12px;">Account</div>
     <div class="srow">
       <div><div class="slabel">Username</div><div class="sdesc">Cannot be changed after account creation</div></div>
       <input class="sinput" id="acc-username" type="text" readonly style="color:var(--t3);cursor:not-allowed;">
@@ -654,11 +662,11 @@ select option{background:var(--card);}
     </div>
     <div class="srow">
       <div><div class="slabel">Delete Account</div><div class="sdesc" style="color:var(--red)">Deletes account and all investment data</div></div>
-      <button class="btn br sm" onclick="deleteAccount()">🗑️ Delete My Account</button>
+      <button class="btn br sm" onclick="deleteAccount()">Delete My Account</button>
     </div>
   </div>
   <div class="card" style="margin-bottom:12px;">
-    <div class="clabel" style="margin-bottom:12px;">🏆 Leaderboard</div>
+    <div class="clabel" style="margin-bottom:12px;">Leaderboard</div>
     <div class="srow">
       <div><div class="slabel">Display Name</div><div class="sdesc">Name shown on the leaderboard (never your real name)</div></div>
       <input class="sinput" id="set-lbname" type="text" placeholder="e.g. WallStreetWizard" oninput="saveSettings()">
@@ -687,7 +695,7 @@ select option{background:var(--card);}
     </div>
     <div class="srow">
       <div><div class="slabel">Reset Everything</div><div class="sdesc" style="color:var(--red)">Deletes all data — cannot be undone!</div></div>
-      <button class="btn br sm" onclick="resetAll()">🗑️ Reset All Data</button>
+      <button class="btn br sm" onclick="resetAll()">Reset All Data</button>
     </div>
   </div>
   <div class="card">
@@ -895,16 +903,16 @@ select option{background:var(--card);}
   <div class="fr">
     <div class="fg"><label>Priority</label>
       <select id="mw-prio">
-        <option value="High">🔴 High</option>
-        <option value="Medium" selected>🟡 Medium</option>
-        <option value="Low">🟢 Low</option>
+        <option value="High">High</option>
+        <option value="Medium" selected>Medium</option>
+        <option value="Low">Low</option>
       </select></div>
     <div class="fg"><label>Action</label>
       <select id="mw-action">
-        <option value="Watch">👀 Watch</option>
-        <option value="Buy Soon">🛒 Buy Soon</option>
-        <option value="Research">🔍 Research</option>
-        <option value="Avoid">🚫 Avoid</option>
+        <option value="Watch">Watch</option>
+        <option value="Buy Soon">Buy Soon</option>
+        <option value="Research">Research</option>
+        <option value="Avoid">Avoid</option>
       </select></div>
   </div>
   <div class="fg"><label>Notes / Investment Thesis</label><textarea id="mw-notes" rows="2" placeholder="Why are you watching this? What's your thesis?"></textarea></div>
@@ -1375,7 +1383,7 @@ function renderDash() {
   ].sort((a,b)=>((b.date||b.startDate||'')>(a.date||a.startDate||''))?1:-1).slice(0,10);
 
   document.getElementById('d-activity').innerHTML = acts.length===0
-    ? '<div class="empty"><div class="ei">🚀</div><p>No activity yet — add your first stock or bond position to get started!</p></div>'
+    ? '<div class="empty"><div class="ei">—</div><p>No activity yet — add your first stock or bond position to get started!</p></div>'
     : acts.map(r => {
         if(r._t==='bond') {
           const c=calcBond(r);
@@ -1441,7 +1449,7 @@ function renderStocks() {
     <div class="card"><div class="clabel">Unrealized P&L (All)</div><div class="cval ${pc(tpl)}">${f$f(tpl)}</div><div class="csub">${fpct(tiLong>0?(tpl/tiLong)*100:0)}</div></div>`;
 
   if(D.stocks.length===0) {
-    document.getElementById('s-body').innerHTML='<tr><td colspan="16"><div class="empty"><div class="ei">📈</div><p>No open positions. Click "+ Add Position" to begin tracking!</p></div></td></tr>';
+    document.getElementById('s-body').innerHTML='<tr><td colspan="16"><div class="empty"><div class="ei">—</div><p>No open positions. Click "+ Add Position" to begin tracking!</p></div></td></tr>';
     document.getElementById('s-foot').innerHTML=''; return;
   }
 
@@ -1468,7 +1476,7 @@ function renderStocks() {
       <td><div style="display:flex;gap:4px;">
         <button class="btn bs sm" onclick="openStock('${s.id}')">✏️</button>
         <button class="btn bg sm" onclick="startCloseStock('${s.id}')">✓</button>
-        <button class="btn br sm" onclick="delStock('${s.id}')">🗑</button>
+        <button class="btn br sm" onclick="delStock('${s.id}')">×</button>
       </div></td>
     </tr>`;
   }).join('');
@@ -1717,7 +1725,7 @@ function saveStock() {
     const pi = D.pendingOrders.findIndex(x=>x.id===id);
     if(pi>=0) D.pendingOrders[pi]=order; else D.pendingOrders.push(order);
     save(); cm('m-stock'); renderStocks();
-    alert('✅ '+orderType+' order placed for '+shares+' shares of '+tick+'. It will execute automatically when conditions are met during the next price refresh.');
+    alert(orderType+' order placed for '+shares+' shares of '+tick+'. It will execute automatically when conditions are met during the next price refresh.');
   }
 }
 
@@ -1778,7 +1786,7 @@ function renderHistory() {
     <div class="card"><div class="clabel">Average Return</div><div class="cval ${pc(tpl)}">${ti>0?fpct((tpl/ti)*100):'—'}</div></div>`;
 
   if(D.stockHist.length===0) {
-    document.getElementById('h-body').innerHTML='<tr><td colspan="15"><div class="empty"><div class="ei">📉</div><p>No closed trades yet. Close a position from the Stocks tab.</p></div></td></tr>';
+    document.getElementById('h-body').innerHTML='<tr><td colspan="15"><div class="empty"><div class="ei">—</div><p>No closed trades yet. Close a position from the Stocks tab.</p></div></td></tr>';
     document.getElementById('h-foot').innerHTML=''; return;
   }
 
@@ -1820,7 +1828,7 @@ function renderBonds() {
     <div class="card"><div class="clabel">Total Maturity Value</div><div class="cval">${f$(tm)}</div><div class="csub">Profit: ${f$(tm-ti)}</div></div>`;
 
   if(D.bonds.length===0) {
-    document.getElementById('b-body').innerHTML='<tr><td colspan="16"><div class="empty"><div class="ei">🏦</div><p>No bonds yet. Click "+ Add Bond" to track your first bond!</p></div></td></tr>';
+    document.getElementById('b-body').innerHTML='<tr><td colspan="16"><div class="empty"><div class="ei">—</div><p>No bonds yet. Click "+ Add Bond" to track your first bond!</p></div></td></tr>';
     document.getElementById('b-foot').innerHTML=''; return;
   }
 
@@ -1847,7 +1855,7 @@ function renderBonds() {
       <td><div style="display:flex;gap:4px;">
         <button class="btn bs sm" onclick="openBond('${b.id}')">✏️</button>
         <button class="btn bg sm" onclick="startCloseBond('${b.id}')">✓</button>
-        <button class="btn br sm" onclick="delBond('${b.id}')">🗑</button>
+        <button class="btn br sm" onclick="delBond('${b.id}')">×</button>
       </div></td>
     </tr>`;
   }).join('');
@@ -1953,7 +1961,7 @@ function renderBondHist() {
     <div class="card"><div class="clabel">Total Realized Value</div><div class="cval">${f$(tr)}</div><div class="csub">Profit: ${f$(tr-ti)}</div></div>`;
 
   if(D.bondHist.length===0) {
-    document.getElementById('bh-body').innerHTML='<tr><td colspan="14"><div class="empty"><div class="ei">📋</div><p>No closed bonds yet.</p></div></td></tr>';
+    document.getElementById('bh-body').innerHTML='<tr><td colspan="14"><div class="empty"><div class="ei">—</div><p>No closed bonds yet.</p></div></td></tr>';
     document.getElementById('bh-foot').innerHTML=''; return;
   }
 
@@ -2034,16 +2042,16 @@ function renderDivers() {
   chDT=new Chart(document.getElementById('ch-dt'),{type:'pie',data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:Object.keys(typeMap).map(k=>tClr[k]||'#8b949e'),borderColor:'#0d1117',borderWidth:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b949e',font:{size:10}}},tooltip:{callbacks:{label:c=>` ${c.label}: ${f$(c.raw)} (${(c.raw/totT*100).toFixed(1)}%)`}}}}});
 
   const tips=[];
-  if(cash/totH>.5) tips.push({t:'warn',m:'💰 Over 50% cash. Consider putting more money to work in the market.'});
-  if(typeMap.Stock/totT>.8&&D.stocks.length>0) tips.push({t:'warn',m:'⚠️ Very stock-heavy portfolio. Consider diversifying into ETFs or bonds to reduce risk.'});
-  if(D.stocks.length<=2&&D.bonds.length===0) tips.push({t:'info',m:'📚 Few positions. Consider adding more to diversify across companies and sectors.'});
-  if(longT/totH<.3&&D.stocks.length>0) tips.push({t:'info',m:'🎯 Low long-term exposure. Long-term investing typically builds more wealth through compounding.'});
-  if(typeMap.Bond/totT<.1) tips.push({t:'info',m:'🏦 No bonds. Even a small bond allocation (10–20%) can reduce portfolio volatility.'});
+  if(cash/totH>.5) tips.push({t:'warn',m:'Over 50% cash. Consider putting more money to work in the market.'});
+  if(typeMap.Stock/totT>.8&&D.stocks.length>0) tips.push({t:'warn',m:'Very stock-heavy portfolio. Consider diversifying into ETFs or bonds to reduce risk.'});
+  if(D.stocks.length<=2&&D.bonds.length===0) tips.push({t:'info',m:'Few positions. Consider adding more to diversify across companies and sectors.'});
+  if(longT/totH<.3&&D.stocks.length>0) tips.push({t:'info',m:'Low long-term exposure. Long-term investing typically builds more wealth through compounding.'});
+  if(typeMap.Bond/totT<.1) tips.push({t:'info',m:'No bonds. Even a small bond allocation (10–20%) can reduce portfolio volatility.'});
   if(D.stocks.length>1) {
     const sectors=new Set(D.stocks.map(s=>s.invType));
-    if(sectors.size===1) tips.push({t:'warn',m:'📊 All positions are the same investment type. Spread across stocks, ETFs, and bonds.'});
+    if(sectors.size===1) tips.push({t:'warn',m:'All positions are the same investment type. Spread across stocks, ETFs, and bonds.'});
   }
-  if(tips.length===0) tips.push({t:'ok',m:'✅ Portfolio looks well-diversified! Keep monitoring and rebalancing regularly.'});
+  if(tips.length===0) tips.push({t:'ok',m:'Portfolio looks well-diversified! Keep monitoring and rebalancing regularly.'});
   const tipClr={warn:'rgba(227,179,65,.08);border:1px solid rgba(227,179,65,.2);color:var(--yellow)',info:'rgba(88,166,255,.08);border:1px solid rgba(88,166,255,.2);color:#93c5fd',ok:'rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.2);color:var(--green)'};
   document.getElementById('div-tips').innerHTML=tips.map(t=>`<div class="tip-item" style="background:${tipClr[t.t]}">${t.m}</div>`).join('');
 }
@@ -2053,10 +2061,10 @@ function renderDivers() {
 // ════════════════════════════════════════════
 function renderWatch() {
   if(D.watchlist.length===0) {
-    document.getElementById('w-body').innerHTML='<tr><td colspan="12"><div class="empty"><div class="ei">👁</div><p>Empty watchlist — add tickers you are researching before buying!</p></div></td></tr>';
+    document.getElementById('w-body').innerHTML='<tr><td colspan="12"><div class="empty"><div class="ei">—</div><p>Empty watchlist — add tickers you are researching before buying!</p></div></td></tr>';
     return;
   }
-  const prioIcon={High:'🔴',Medium:'🟡',Low:'🟢'};
+  const prioIcon={High:'High',Medium:'Medium',Low:'Low'};
   const actClr={'Buy Soon':'bg-g','Watch':'bg-b','Research':'bg-y','Avoid':'bg-r'};
   document.getElementById('w-body').innerHTML=D.watchlist.map(w=>`<tr>
     <td style="cursor:pointer;font-size:16px;" onclick="toggleStar('${w.id}')">${w.starred?'⭐':'☆'}</td>
@@ -2067,13 +2075,13 @@ function renderWatch() {
     <td class="${pc(w.ytd||0)}">${w.ytd!=null?fpct(w.ytd):'—'}</td>
     <td class="pos">${w.targetBuy?f$f(w.targetBuy):'—'}</td>
     <td class="neg">${w.targetSell?f$f(w.targetSell):'—'}</td>
-    <td>${prioIcon[w.priority]||'🟡'} ${w.priority||'Medium'}</td>
+    <td>${w.priority||'Medium'}</td>
     <td><span class="badge ${actClr[w.action]||'bg-b'}">${w.action||'Watch'}</span></td>
     <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;font-size:11px;color:var(--t2);">${w.notes||'—'}</td>
     <td><div style="display:flex;gap:4px;">
       <button class="btn bs sm" onclick="openWatch('${w.id}')">✏️</button>
-      <button class="btn bg sm" onclick="watchToBuy('${w.id}')" title="Move to portfolio">📈</button>
-      <button class="btn br sm" onclick="delWatch('${w.id}')">🗑</button>
+      <button class="btn bg sm" onclick="watchToBuy('${w.id}')" title="Move to portfolio">↗</button>
+      <button class="btn br sm" onclick="delWatch('${w.id}')">×</button>
     </div></td>
   </tr>`).join('');
 }
@@ -2213,7 +2221,7 @@ function renderSP() {
     <div class="card"><div class="clabel">S&P 500 Start Level</div><div class="cval">${sp.buyLevel?(+sp.buyLevel).toLocaleString():'—'}</div><div class="csub">${fd(sp.date)}</div></div>
     <div class="card"><div class="clabel">S&P 500 Current Level</div><div class="cval">${sp.curLevel?(+sp.curLevel).toLocaleString():'—'}</div></div>
     <div class="card"><div class="clabel">S&P 500 Return</div><div class="cval ${pc(pct)}">${inv>0?fpct(pct):'—'}</div></div>
-    <div class="card"><div class="clabel">Your Portfolio vs S&P</div><div class="cval ${pc(diff)}">${inv>0?fpct(diff):'—'}</div><div class="csub">${inv>0?(diff>0?'🏆 Beating the market!':diff<0?'📉 Trailing market':'↔ Even with market'):'Set up benchmark →'}</div></div>`;
+    <div class="card"><div class="clabel">Your Portfolio vs S&P</div><div class="cval ${pc(diff)}">${inv>0?fpct(diff):'—'}</div><div class="csub">${inv>0?(diff>0?'Beating the market':diff<0?'Trailing market':'↔ Even with market'):'Set up benchmark →'}</div></div>`;
 }
 
 function openSP(){
@@ -2270,7 +2278,7 @@ function renderGrowth() {
   }
 
   if(sorted.length===0){
-    document.getElementById('g-body').innerHTML='<tr><td colspan="7"><div class="empty"><div class="ei">📅</div><p>No growth entries yet. Click "+ Log Entry" to start tracking!</p></div></td></tr>';
+    document.getElementById('g-body').innerHTML='<tr><td colspan="7"><div class="empty"><div class="ei">—</div><p>No growth entries yet. Click "+ Log Entry" to start tracking!</p></div></td></tr>';
     return;
   }
   document.getElementById('g-body').innerHTML=[...sorted].reverse().map(g=>{
@@ -2284,7 +2292,7 @@ function renderGrowth() {
       <td class="${pc(pl)}">${f$f(pl)} (${fpct(pct)})</td>
       <td class="${pc(spRet||0)}">${spRet!=null?fpct(spRet):'—'}</td>
       <td class="${vs!=null?pc(vs):'neu'}">${vs!=null?fpct(vs):'—'}</td>
-      <td><button class="btn br sm" onclick="delGrowth('${g.id}')">🗑</button></td>
+      <td><button class="btn br sm" onclick="delGrowth('${g.id}')">×</button></td>
     </tr>`;
   }).join('');
 }
@@ -2432,8 +2440,8 @@ async function refreshPrices(silent=false){
   const lts=document.getElementById('live-ts');
   if(lts&&updated>0){const n=new Date();lts.innerHTML='<span class="live-dot"></span>'+n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');}
   if(!silent){
-    if(updated>0){renderStocks();renderDash();renderWatch();alert('✅ Updated prices for '+updated+' ticker(s).');}
-    else alert('Could not fetch prices. Check your Finnhub API key in ⚙️ Settings.');
+    if(updated>0){renderStocks();renderDash();renderWatch();alert('Updated prices for '+updated+' ticker(s).');}
+    else alert('Could not fetch prices. Check your Finnhub API key in Settings.');
   } else if(updated>0){renderStocks();renderDash();}
 }
 
@@ -2498,7 +2506,7 @@ function checkPendingOrders(priceMap) {
   });
   if(filled>0){
     save();renderStocks();renderDash();
-    console.log('✅ '+filled+' pending order(s) auto-executed!');
+    console.log(filled+' pending order(s) auto-executed!');
   }
 }
 
@@ -2673,16 +2681,16 @@ const LB_MOCK = [
 ];
 
 function lbBadge(pct, beatsSP) {
-  if (pct >= 50)  return { label:'Legend',      cls:'bg-p',  icon:'👑' };
-  if (pct >= 30)  return { label:'Expert',       cls:'bg-g',  icon:'🔥' };
+  if (pct >= 50)  return { label:'Legend',      cls:'bg-p',  icon:'' };
+  if (pct >= 30)  return { label:'Expert',       cls:'bg-g',  icon:'' };
   if (pct >= 15)  return { label:'Pro',          cls:'bg-b',  icon:'⭐' };
-  if (pct >= 5)   return { label:'Apprentice',   cls:'bg-y',  icon:'📈' };
-  if (pct >= 0)   return { label:'Rookie',       cls:'bg-o',  icon:'🌱' };
-  return              { label:'In the Red',   cls:'bg-r',  icon:'📉' };
+  if (pct >= 5)   return { label:'Apprentice',   cls:'bg-y',  icon:'' };
+  if (pct >= 0)   return { label:'Rookie',       cls:'bg-o',  icon:'' };
+  return              { label:'In the Red',   cls:'bg-r',  icon:'' };
 }
 
 function lbRankIcon(i) {
-  return ['🥇','🥈','🥉'][i] || `<span style="color:var(--t3);font-weight:700;">#${i+1}</span>`;
+  return ['1st','2nd','3rd'][i] || `<span style="color:var(--t3);font-weight:700;">#${i+1}</span>`;
 }
 
 async function renderLeaderboard() {
@@ -2716,7 +2724,7 @@ async function renderLeaderboard() {
       banner.className = 'alert a-info';
       banner.style.alignItems = 'flex-start';
       banner.style.gap = '10px';
-      banner.innerHTML = '<span style="font-size:22px;flex-shrink:0;">🔌</span><div><strong>Leaderboard table not found in Supabase.</strong> The backend code is connected — you just need to create the <code>leaderboard_scores</code> table. See the setup instructions (ask your developer). Showing demo data for now.</div>';
+      banner.innerHTML = '<div><strong>Leaderboard table not found in Supabase.</strong> The backend code is connected — you just need to create the <code>leaderboard_scores</code> table. See the setup instructions (ask your developer). Showing demo data for now.</div>';
     } else {
       banner.style.display = 'none';
     }
@@ -2734,8 +2742,8 @@ async function renderLeaderboard() {
   // Status badge
   document.getElementById('lb-status-badge').innerHTML =
     LB_CONNECTED
-      ? '<span class="badge bg-g">🟢 Live</span>'
-      : '<span class="badge bg-y">🟡 Demo Mode</span>';
+      ? '<span class="badge bg-g">Live</span>'
+      : '<span class="badge bg-y">Demo</span>';
 
   document.getElementById('lb-conn-status').className = 'badge ' + (LB_CONNECTED ? 'bg-g' : 'bg-r');
   document.getElementById('lb-conn-status').textContent = LB_CONNECTED ? 'Connected' : 'Not Connected';
@@ -2781,7 +2789,7 @@ async function renderLeaderboard() {
         </div>
       </div>`;
   } else {
-    document.getElementById('lb-myrank').innerHTML = '<div class="alert a-info">Enable leaderboard opt-in in ⚙️ Settings to see your ranking here.</div>';
+    document.getElementById('lb-myrank').innerHTML = '<div class="alert a-info">Enable leaderboard opt-in in Settings to see your ranking here.</div>';
   }
 
   // Full table
@@ -2875,7 +2883,7 @@ async function renderEdu(force=false) {
       loading.style.display = 'none';
       grid.style.display    = 'none';
       emptyEl.style.display = 'block';
-      emptyEl.innerHTML = '<div class="empty"><div class="ei">🎓</div><p>No stocks to analyze yet.</p><p style="font-size:12px;">Add stocks to your portfolio or watchlist and the AI will start monitoring them here.</p></div>';
+      emptyEl.innerHTML = '<div class="empty"><div class="ei">—</div><p>No stocks to analyze yet.</p><p style="font-size:12px;">Add stocks to your portfolio or watchlist and the AI will start monitoring them here.</p></div>';
       return;
     }
 
@@ -2919,7 +2927,7 @@ async function renderEdu(force=false) {
   } catch(err) {
     console.error('Education tab error:', err);
     if(loading) loading.style.display = 'none';
-    if(grid) { grid.style.display = 'block'; grid.innerHTML = '<div class="empty"><div class="ei">⚠️</div><p>Something went wrong loading analysis.</p><p style="font-size:12px;">'+err.message+'</p></div>'; }
+    if(grid) { grid.style.display = 'block'; grid.innerHTML = '<div class="empty"><div class="ei">!</div><p>Something went wrong loading analysis.</p><p style="font-size:12px;">'+err.message+'</p></div>'; }
   } finally {
     _eduRunning = false;
   }
@@ -2938,7 +2946,7 @@ function renderEduGrid() {
   });
 
   if(!filtered.length) {
-    grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="ei">🔍</div><p>No stocks in this category.</p></div>';
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="ei">—</div><p>No stocks in this category.</p></div>';
     return;
   }
 
@@ -3042,7 +3050,7 @@ function buildEduCard(item, quote, candles) {
   }
   if(wItem && wItem.targetBuy) {
     const diff = price > 0 ? ((price - wItem.targetBuy)/wItem.targetBuy*100) : 0;
-    const txt  = price <= wItem.targetBuy ? `🎯 At or below target!` : `${diff.toFixed(1)}% above target`;
+    const txt  = price <= wItem.targetBuy ? `At or below target` : `${diff.toFixed(1)}% above target`;
     mRows.push(`<div class="edu-metric"><span class="edu-metric-label">Your Buy Target</span><span style="color:${price<=wItem.targetBuy?'var(--green)':'var(--t2)'}">${f$f(wItem.targetBuy)} — ${txt}</span></div>`);
   }
   if(quote && high > low) {
@@ -3078,12 +3086,12 @@ function buildEduCard(item, quote, candles) {
   ${mRows.length ? `<div style="margin-top:10px;">${mRows.join('')}</div>` : ''}
 
   <div class="edu-ai-box">
-    <div style="font-size:10px;font-weight:700;color:var(--blue);letter-spacing:.06em;margin-bottom:7px;">🤖 AI ANALYSIS</div>
+    <div style="font-size:10px;font-weight:700;color:var(--blue);letter-spacing:.06em;margin-bottom:7px;">AI ANALYSIS</div>
     ${analysis.commentary}
   </div>
 
   <div class="edu-action-box ${actionCls}">
-    💡 <strong>Suggestion:</strong> ${analysis.recommendation}
+    <strong>Suggestion:</strong> ${analysis.recommendation}
   </div>
 </div>`;
 }
@@ -3167,12 +3175,12 @@ function genEduAnalysis({ price, dp, open, high, low, prevClose, rsi, sma20, sma
     commentary = 'Live data is unavailable for this ticker. Click <strong>Refresh Analysis</strong> to fetch the latest market data, or verify your Finnhub API key in Settings.';
   } else {
     if(positives.length) {
-      commentary += `<strong style="color:var(--green);">✅ Positive signals:</strong> `;
+      commentary += `<strong style="color:var(--green);">Positive signals:</strong> `;
       commentary += positives.slice(0,2).map((p,i) => i===0 ? p.charAt(0).toUpperCase()+p.slice(1) : p).join('; ');
       commentary += '. ';
     }
     if(cautions.length) {
-      commentary += `<strong style="color:var(--red);">⚠️ Watch out:</strong> `;
+      commentary += `<strong style="color:var(--red);">Watch out:</strong> `;
       commentary += cautions.slice(0,2).map((c,i) => i===0 ? c.charAt(0).toUpperCase()+c.slice(1) : c).join('; ');
       commentary += '. ';
     }
@@ -3189,7 +3197,7 @@ function genEduAnalysis({ price, dp, open, high, low, prevClose, rsi, sma20, sma
     'Sell':        'Bearish signals outweigh bullish ones. If holding, consider protecting profits or reducing exposure.',
     'Strong Sell': 'Multiple bearish indicators are stacking. High-risk environment — defensive positioning is warranted.'
   };
-  commentary += `<br><span style="color:var(--t3);font-size:11px;font-style:italic;">📚 ${edu[signal]}</span>`;
+  commentary += `<br><span style="color:var(--t3);font-size:11px;font-style:italic;">${edu[signal]}</span>`;
 
   // ── Position-aware recommendation ────────────────────────────────────────
   let recommendation = '';
@@ -3209,7 +3217,7 @@ function genEduAnalysis({ price, dp, open, high, low, prevClose, rsi, sma20, sma
     }
   } else if(wItem) {
     const atTarget = wItem.targetBuy && price > 0 && price <= wItem.targetBuy;
-    if(signal === 'Strong Buy')    recommendation = atTarget ? `🎯 Price is at or below your buy target of ${f$f(wItem.targetBuy)}! Strong entry signal — this looks like the setup you've been waiting for.` : `Strong buy signal. Price hasn't hit your target of ${f$f(wItem.targetBuy||0)} but conditions are compelling — consider entering a partial position.`;
+    if(signal === 'Strong Buy')    recommendation = atTarget ? `Price is at or below your buy target of ${f$f(wItem.targetBuy)}! Strong entry signal — this looks like the setup you've been waiting for.` : `Strong buy signal. Price hasn't hit your target of ${f$f(wItem.targetBuy||0)} but conditions are compelling — consider entering a partial position.`;
     else if(signal === 'Buy')      recommendation = atTarget ? `Price is near your buy target and conditions look positive. A gradual entry makes sense here.` : `Positive signal but price is still above your target. Wait patiently or consider entering a small position to start tracking.`;
     else if(signal === 'Hold')     recommendation = `Neutral signal. Continue watching. ${atTarget ? 'Price is near your target — wait for a clearer entry signal.' : 'No rush to act.'}`;
     else                           recommendation = `Bearish signals suggest this is not the right time to enter a long position. The stock may move closer to your target — patience is rewarded.`;
